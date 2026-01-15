@@ -33,6 +33,22 @@ const ageGroups = [
   { id: '10-12', label: '10-12 yaş', emoji: '🌳' },
 ];
 
+// Varsayılan takma adları yaş grubuna göre döndüren yardımcı fonksiyon
+const getDefaultNickname = (ageId: string) => {
+  switch (ageId) {
+    case '4-5':
+      return 'Küçük Bilim İnsanı';
+    case '6-7':
+      return 'Meraklı Öğrenen';
+    case '8-9':
+      return 'Deney Sever';
+    case '10-12':
+      return 'Bilim Yolcusu';
+    default:
+      return 'Küçük Bilim İnsanı';
+  }
+};
+
 export default function ProfileSetupScreen() {
   const router = useRouter();
   const [nickname, setNickname] = useState('');
@@ -44,7 +60,7 @@ export default function ProfileSetupScreen() {
     try {
       // Profili kaydet
       const profile = {
-        nickname: nickname.trim() || 'Küçük Bilim İnsanı',
+        nickname: nickname.trim() || getDefaultNickname(selectedAge),
         avatar: selectedAvatar,
         ageGroup: selectedAge,
         createdAt: new Date().toISOString(),
@@ -68,10 +84,10 @@ export default function ProfileSetupScreen() {
     try {
       // Varsayılan profil oluştur
       const defaultProfile = {
-        nickname: 'Küçük Bilim İnsanı',
-        avatar: 'scientist',
-        // Match the defined age groups (use '8-9' instead of '8-10')
-        ageGroup: '8-9',
+        nickname: getDefaultNickname(selectedAge),
+        avatar: selectedAvatar,
+        // Match the defined age groups (use current selectedAge)
+        ageGroup: selectedAge,
         createdAt: new Date().toISOString(),
         totalPoints: 0,
         completedExperiments: [],
@@ -96,18 +112,13 @@ export default function ProfileSetupScreen() {
 
   return (
     <LinearGradient colors={['#14B8A6', '#0D9488']} style={styles.container}>
-      {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipText}>Atla</Text>
-      </TouchableOpacity>
-
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerEmoji}>🎨</Text>
+          <Text style={styles.headerEmoji}>🥼</Text>
           <Text style={styles.title}>Profilini Oluştur!</Text>
           <Text style={styles.subtitle}>
             İstersen bir takma ad ve avatar seç
@@ -187,7 +198,7 @@ export default function ProfileSetupScreen() {
         <View style={styles.previewCard}>
           <Text style={styles.previewEmoji}>{selectedAvatarData?.emoji}</Text>
           <Text style={styles.previewName}>
-            {nickname.trim() || 'Küçük Bilim İnsanı'}
+            {nickname.trim() || getDefaultNickname(selectedAge)}
           </Text>
           <Text style={styles.previewAge}>
             {ageGroups.find((a) => a.id === selectedAge)?.label}
@@ -295,7 +306,7 @@ const styles = StyleSheet.create({
     borderColor: '#F59E0B',
   },
   avatarEmoji: {
-    fontSize: 24,
+    fontSize: 35,
   },
   checkBadge: {
     position: 'absolute',
@@ -326,7 +337,7 @@ const styles = StyleSheet.create({
     borderColor: '#10B981',
   },
   ageEmoji: {
-    fontSize: 24,
+    fontSize: 35,
     marginBottom: 4,
   },
   ageLabel: {

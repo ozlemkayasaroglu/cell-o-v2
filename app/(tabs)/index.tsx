@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
   Microscope,
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react-native';
 import { useWeeklyExperiment } from '@/hooks/useWeeklyExperiment';
 import { useScreenTime } from '@/hooks/useScreenTime';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   ScienceButton,
   ScienceCard,
@@ -37,9 +39,52 @@ export default function HomeScreen() {
   const screenTime = useScreenTime();
   const [totalXP, setTotalXP] = useState(0);
   const [level, setLevel] = useState(1);
+  const [profile, setProfile] = useState<any>(null);
   const floatAnim = useRef(new Animated.Value(0)).current;
   const sparkleAnim = useRef(new Animated.Value(0)).current;
   const xpIntervalRef = useRef<number | null>(null);
+
+  // Age group labels map
+  const ageGroupLabels: Record<string, string> = {
+    '4-5': '4–5 yaş',
+    '6-7': '6–7 yaş',
+    '8-9': '8–9 yaş',
+    '10-12': '10–12 yaş',
+  };
+
+  // Age group default role titles (matches getDefaultNickname)
+  const ageDefaultTitles: Record<string, string> = {
+    '4-5': 'Küçük Bilim İnsanı',
+    '6-7': 'Meraklı Öğrenen',
+    '8-9': 'Deney Sever',
+    '10-12': 'Bilim Yolcusu',
+  };
+
+  // Avatar id -> emoji map (must match profile-setup avatars)
+  const avatarEmojiMap: Record<string, string> = {
+    unicorn: '🦄',
+    butterfly: '🦋',
+    ladybug: '🐞',
+    bunny: '🐰',
+    cat: '🐱',
+    dog: '🐶',
+    scientist: '🥼',
+  };
+
+  // Load saved profile on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('user_profile');
+        if (raw) {
+          setProfile(JSON.parse(raw));
+        }
+      } catch (e) {
+        console.warn('Profil yüklenemedi:', e);
+      }
+    };
+    loadProfile();
+  }, []);
 
   useEffect(() => {
     // progress değiştiğinde animasyonlu XP artışı uygula
@@ -155,16 +200,22 @@ export default function HomeScreen() {
               { transform: [{ translateY: floatAnim }] },
             ]}
           >
-            <Text style={styles.headerEmoji}>🔬</Text>
+            <Text style={styles.headerEmoji}>
+              {profile ? avatarEmojiMap[profile.avatar] || '🔬' : '🔬'}
+            </Text>
             <Animated.View
               style={[styles.sparkle, { opacity: sparkleOpacity }]}
             >
               <Sparkles size={20} color="#FFD700" />
             </Animated.View>
           </Animated.View>
-          <Text style={styles.title}>Küçük Bilim İnsanı</Text>
+          <Text style={styles.title}>
+            {profile?.nickname || 'Küçük Bilim İnsanı'}
+          </Text>
           <Text style={styles.subtitle}>
-            Mikro dünyanın harikalarını keşfet!
+            {profile
+              ? ageDefaultTitles[profile.ageGroup] || 'Küçük Bilim İnsanı'
+              : 'Mikro dünyanın harikalarını keşfet!'}
           </Text>
         </View>
 
@@ -354,14 +405,19 @@ export default function HomeScreen() {
         </ScienceCard>
 
         {/* Start Button */}
-        <ScienceButton
-          title="Deneye Başla!"
-          onPress={navigateToExperiments}
-          variant="primary"
-          size="large"
-          icon={<FlaskConical size={22} color="#FFF" />}
-          style={styles.startButton}
-        />
+        <SafeAreaView
+          edges={['bottom']}
+          style={{ backgroundColor: 'transparent' }}
+        >
+          <ScienceButton
+            title="Deneye Başla!"
+            onPress={navigateToExperiments}
+            variant="primary"
+            size="large"
+            icon={<FlaskConical size={22} color="#FFF" />}
+            style={styles.startButton}
+          />
+        </SafeAreaView>
       </View>
     </ScrollView>
   );
@@ -494,6 +550,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: scienceTheme.colors.text,
     marginBottom: 12,
+    margin: 8,
   },
   loadingText: {
     textAlign: 'center',
