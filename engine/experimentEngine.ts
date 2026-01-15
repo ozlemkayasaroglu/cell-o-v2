@@ -98,7 +98,7 @@ function isExperimentSuitableForAge(exp: any, ageGroup?: string | null) {
     return derivedAgeGroups.includes(ageGroup);
   }
 
-  // 3) Fallback: difficulty etiketine göre yaşQuality kontrolü (mevcut ageDifficultyMap tersinden)
+  // 3) Fallback: difficulty etiketine göre yaş kontrolü (mevcut ageDifficultyMap tersinden)
   // Eğer yine bilgi yoksa eski mantığa dön: eğer deneyde difficulty yoksa uygun say
   if (!difficulty) return true;
 
