@@ -55,21 +55,24 @@ function getDefaultProgress(): WeeklyProgress {
 }
 
 // Yaş grubuna göre izin verilen zorluk seviyeleri (kullanıcının isteğine göre)
-// 4-5 ve 6-7 => sadece 'kolay'
-// 8-9 => sadece 'orta'
-// 10-12 => sadece 'zor'
+// Daha esnek bir haritalama:
+// 4-5 => 'kolay'
+// 6-7 => 'kolay'
+// 8-9 => 'kolay', 'orta'
+// 10-12 => 'orta', 'zor'
 const ageDifficultyMap: Record<string, string[]> = {
   '4-5': ['kolay'],
   '6-7': ['kolay'],
-  '8-9': ['orta'],
-  '10-12': ['zor'],
+  '8-9': ['kolay', 'orta'],
+  '10-12': ['orta', 'zor'],
 };
 
 // Bir deneyin belirli yaş grubuna uygun olup olmadığını kontrol et
 // Eğer experiment.ageGroups yoksa, difficulty bazlı çıkarım yaparak yaş aralıklarını türetiriz
+// Buradaki harita, ageDifficultyMap ile tutarlı olacak şekilde daha esnek hale getirildi
 const difficultyToAgeGroups: Record<string, string[]> = {
-  kolay: ['4-5', '6-7'],
-  orta: ['8-9'],
+  kolay: ['4-5', '6-7', '8-9'],
+  orta: ['8-9', '10-12'],
   zor: ['10-12'],
 };
 
