@@ -34,7 +34,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 export default function ExperimentsScreen() {
   const router = useRouter();
   const {
-    currentExperiment,
     allExperiments,
     progress,
     completeExperiment,
