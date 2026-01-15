@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: scienceTheme.colors.text,
     marginBottom: 12,
-    margin: 8,
+    marginHorizontal: 8,
   },
   loadingText: {
     textAlign: 'center',
