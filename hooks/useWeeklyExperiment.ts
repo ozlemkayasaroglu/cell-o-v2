@@ -74,33 +74,7 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
       setAllExperiments(all);
       setProgress(prog);
 
-      // Console logging for debugging: show experiments in order
-      try {
-        console.log('=== WeeklyExperiment: currentExperiment ===');
-        console.log(currentExp);
-
-        console.log('=== WeeklyExperiment: upcomingExperiments ===');
-        if (Array.isArray(upcoming)) {
-          upcoming.forEach((exp, idx) => {
-            console.log(`#${idx + 1}`, exp?.title || exp?.id || exp);
-            console.log(exp);
-          });
-        } else {
-          console.log(upcoming);
-        }
-
-        console.log('=== WeeklyExperiment: allExperiments ===');
-        if (Array.isArray(all)) {
-          all.forEach((exp, idx) => {
-            console.log(`#${idx + 1}`, exp?.title || exp?.id || exp);
-            console.log(exp);
-          });
-        } else {
-          console.log(all);
-        }
-      } catch (logErr) {
-        console.warn('Error logging experiments:', logErr);
-      }
+      // Removed verbose debugging logs
     } catch (err) {
       console.error('Veri yüklenirken hata:', err);
       setError('Veriler yüklenemedi. Lütfen tekrar dene.');

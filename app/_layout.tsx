@@ -32,13 +32,6 @@ export default function RootLayout() {
         AsyncStorage.getItem('profile_completed'),
       ]);
 
-      console.log(
-        'Onboarding:',
-        onboardingCompleted,
-        'Profile:',
-        profileCompleted
-      );
-
       if (onboardingCompleted !== 'true') {
         setInitialRoute('/onboarding');
       } else if (profileCompleted !== 'true') {

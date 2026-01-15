@@ -86,13 +86,6 @@ export default function HomeScreen() {
     loadProfile();
   }, []);
 
-  // Debug: log currentExperiment when it changes (avoid logging inside JSX)
-  useEffect(() => {
-    if (__DEV__) {
-      console.log('Home currentExperiment:', currentExperiment);
-    }
-  }, [currentExperiment]);
-
   useEffect(() => {
     // progress değiştiğinde animasyonlu XP artışı uygula
     const newXP = progress?.totalPoints || 0;
