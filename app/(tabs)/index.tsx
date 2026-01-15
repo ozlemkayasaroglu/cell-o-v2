@@ -60,9 +60,7 @@ export default function HomeScreen() {
     bunny: '🐰',
     cat: '🐱',
     dog: '🐶',
-    scientist: '🥼',
   };
-
   // Load saved profile on mount
   useEffect(() => {
     const loadProfile = async () => {
