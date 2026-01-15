@@ -16,14 +16,14 @@ interface UseWeeklyExperimentResult {
   currentExperiment: WeeklyExperiment | null;
   upcomingExperiments: WeeklyExperiment[];
   allExperiments: WeeklyExperiment[];
-  
+
   // İlerleme
   progress: WeeklyProgress;
-  
+
   // Durumlar
   loading: boolean;
   error: string | null;
-  
+
   // Aksiyonlar
   refreshData: () => Promise<void>;
   completeExperiment: (
@@ -40,8 +40,11 @@ interface UseWeeklyExperimentResult {
 }
 
 export function useWeeklyExperiment(): UseWeeklyExperimentResult {
-  const [currentExperiment, setCurrentExperiment] = useState<WeeklyExperiment | null>(null);
-  const [upcomingExperiments, setUpcomingExperiments] = useState<WeeklyExperiment[]>([]);
+  const [currentExperiment, setCurrentExperiment] =
+    useState<WeeklyExperiment | null>(null);
+  const [upcomingExperiments, setUpcomingExperiments] = useState<
+    WeeklyExperiment[]
+  >([]);
   const [allExperiments, setAllExperiments] = useState<WeeklyExperiment[]>([]);
   const [progress, setProgress] = useState<WeeklyProgress>({
     currentWeek: 1,
@@ -57,7 +60,7 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const [currentExp, upcoming, all, prog] = await Promise.all([
         experimentEngine.getCurrentWeekExperiment(),
@@ -70,6 +73,34 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
       setUpcomingExperiments(upcoming);
       setAllExperiments(all);
       setProgress(prog);
+
+      // Console logging for debugging: show experiments in order
+      try {
+        console.log('=== WeeklyExperiment: currentExperiment ===');
+        console.log(currentExp);
+
+        console.log('=== WeeklyExperiment: upcomingExperiments ===');
+        if (Array.isArray(upcoming)) {
+          upcoming.forEach((exp, idx) => {
+            console.log(`#${idx + 1}`, exp?.title || exp?.id || exp);
+            console.log(exp);
+          });
+        } else {
+          console.log(upcoming);
+        }
+
+        console.log('=== WeeklyExperiment: allExperiments ===');
+        if (Array.isArray(all)) {
+          all.forEach((exp, idx) => {
+            console.log(`#${idx + 1}`, exp?.title || exp?.id || exp);
+            console.log(exp);
+          });
+        } else {
+          console.log(all);
+        }
+      } catch (logErr) {
+        console.warn('Error logging experiments:', logErr);
+      }
     } catch (err) {
       console.error('Veri yüklenirken hata:', err);
       setError('Veriler yüklenemedi. Lütfen tekrar dene.');
@@ -90,13 +121,16 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
       rating: number;
     }
   ) => {
-    const result = await experimentEngine.completeExperiment(experimentId, observation);
-    
+    const result = await experimentEngine.completeExperiment(
+      experimentId,
+      observation
+    );
+
     if (result.success) {
       // Verileri yenile
       await loadData();
     }
-    
+
     return result;
   };
 

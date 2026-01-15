@@ -86,6 +86,13 @@ export default function HomeScreen() {
     loadProfile();
   }, []);
 
+  // Debug: log currentExperiment when it changes (avoid logging inside JSX)
+  useEffect(() => {
+    if (__DEV__) {
+      console.log('Home currentExperiment:', currentExperiment);
+    }
+  }, [currentExperiment]);
+
   useEffect(() => {
     // progress değiştiğinde animasyonlu XP artışı uygula
     const newXP = progress?.totalPoints || 0;
@@ -306,17 +313,19 @@ export default function HomeScreen() {
               <View style={styles.experimentHeader}>
                 <View style={styles.weekBadge}>
                   <Text style={styles.weekBadgeText}>
-                    Hafta {currentExperiment.weekNumber}
+                    Hafta {(progress?.totalExperimentsCompleted ?? 0) + 1}
                   </Text>
                 </View>
                 <DifficultyTag difficulty={currentExperiment.difficulty} />
               </View>
 
               <Text style={styles.experimentTitle}>
-                {currentExperiment.title}
+                {(currentExperiment as any).childFriendly?.title ??
+                  currentExperiment.title}
               </Text>
               <Text style={styles.experimentDesc} numberOfLines={2}>
-                {currentExperiment.description}
+                {(currentExperiment as any).childFriendly?.description ??
+                  currentExperiment.description}
               </Text>
 
               <View style={styles.experimentFooter}>
