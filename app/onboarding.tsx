@@ -1,84 +1,29 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
-  Animated,
   TouchableOpacity,
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { scienceTheme } from '../theme/science';
 
 const { width, height } = Dimensions.get('window');
 
-interface OnboardingSlide {
-  id: number;
-  title: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  colors: [string, string];
-  emoji: string;
-}
-
-const slides: OnboardingSlide[] = [
+const slides = [
   {
     id: 1,
-    title: 'Küçük Bilim İnsanı Ol! 🔬',
-    description: 'Evdeki malzemelerle harika deneyler yap ve doğanın sırlarını keşfet!',
-    icon: 'flask',
-    colors: ['#14B8A6', '#0D9488'] as [string, string],
-    emoji: '🧪',
-  },
-  {
-    id: 2,
-    title: 'Her Hafta Yeni Macera! 🌟',
-    description: 'Her hafta seni bekleyen eğlenceli deneyler var. Adım adım talimatları takip et!',
-    icon: 'calendar',
-    colors: ['#F59E0B', '#D97706'] as [string, string],
-    emoji: '📅',
-  },
-  {
-    id: 3,
-    title: 'Rozetler Kazan! 🏆',
-    description: 'Deneyleri tamamla, rozetler kazan ve gerçek bir bilim insanı ol!',
-    icon: 'trophy',
+    type: 'image',
     colors: ['#10B981', '#059669'] as [string, string],
-    emoji: '🎖️',
   },
 ];
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const slideRef = useRef<any>(null);
-
-  // Animasyonlar
-  const bounceAnim = useRef(new Animated.Value(1)).current;
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  React.useEffect(() => {
-    // Bounce animasyonu
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
 
   const handleNext = () => {
     if (currentIndex < slides.length - 1) {
@@ -102,102 +47,71 @@ export default function OnboardingScreen() {
     }
   };
 
-  const renderDots = () => {
+  const currentSlide = slides[currentIndex];
+
+  const renderSlide = () => {
+    // Illustration container on top and content card below
     return (
-      <View style={styles.dotsContainer}>
-        {slides.map((_, index) => {
-          const isActive = index === currentIndex;
-          return (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setCurrentIndex(index)}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
-                  width: isActive ? 24 : 10,
-                },
-              ]}
+      <>
+        <View style={styles.illustrationContainer}>
+          <Image
+            source={require('../assets/images/onboarding.png')}
+            style={styles.illustrationImage}
+            resizeMode="cover"
+          />
+        </View>
+
+        <View style={styles.contentCard}>
+          <View style={styles.iconWrapper}>
+            <Image
+              source={require('../assets/images/logo.png')}
+              style={styles.cardIcon}
+              resizeMode="contain"
             />
-          );
-        })}
-      </View>
+          </View>
+          <Text style={styles.cardTitle}>Keşfet & Deneyle!</Text>
+          <Text style={styles.cardDescription}>
+            Merak seni inanılmaz keşiflere götüren küçük laboratuvarımıza hoş
+            geldin. Güvenli, eğlenceli ve harikalar dolu.
+          </Text>
+        </View>
+      </>
     );
   };
 
-  const currentSlide = slides[currentIndex];
-
   return (
     <LinearGradient
-      colors={currentSlide.colors}
+      colors={['#E8F5F1', '#F0F9F6']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
       {/* Skip Button */}
-      {currentIndex < slides.length - 1 && (
-        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-          <Text style={styles.skipText}>Atla</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+        <Text style={styles.skipText}>Atla</Text>
+      </TouchableOpacity>
 
-      {/* Content */}
-      <View style={styles.content}>
-        {/* Icon Container */}
-        <Animated.View
-          style={[
-            styles.iconContainer,
-            { transform: [{ scale: bounceAnim }] },
-          ]}
-        >
-          <View style={styles.iconCircle}>
-            <Text style={styles.emoji}>{currentSlide.emoji}</Text>
-          </View>
-        </Animated.View>
-
-        {/* Floating Elements */}
-        <View style={styles.floatingElements} pointerEvents="none">
-          <Animated.View style={[styles.floatingBubble, styles.bubble1]}>
-            <Text style={styles.bubbleEmoji}>⭐</Text>
-          </Animated.View>
-          <Animated.View style={[styles.floatingBubble, styles.bubble2]}>
-            <Text style={styles.bubbleEmoji}>🌈</Text>
-          </Animated.View>
-          <Animated.View style={[styles.floatingBubble, styles.bubble3]}>
-            <Text style={styles.bubbleEmoji}>✨</Text>
-          </Animated.View>
-        </View>
-
-        {/* Text Content */}
-        <Text style={styles.title}>{currentSlide.title}</Text>
-        <Text style={styles.description}>{currentSlide.description}</Text>
-      </View>
+      {renderSlide()}
 
       {/* Dots */}
-      {renderDots()}
+      <View style={styles.dotsContainer}>
+        {slides.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              index === currentIndex ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
 
-      {/* Button */}
       <TouchableOpacity
         style={styles.nextButton}
         onPress={handleNext}
         activeOpacity={0.8}
       >
-        <View style={styles.buttonContent}>
-          <Text style={styles.buttonText}>
-            {currentIndex === slides.length - 1 ? 'Başlayalım!' : 'İleri'}
-          </Text>
-          <Ionicons
-            name={currentIndex === slides.length - 1 ? 'rocket' : 'arrow-forward'}
-            size={20}
-            color={currentSlide.colors[0]}
-          />
-        </View>
+        <Text style={styles.buttonText}>Keşfe Başla →</Text>
       </TouchableOpacity>
-
-      {/* Decorative Bottom Wave */}
-      <View style={styles.waveContainer} pointerEvents="none">
-        <View style={[styles.wave, { backgroundColor: 'rgba(255,255,255,0.1)' }]} />
-      </View>
     </LinearGradient>
   );
 }
@@ -205,135 +119,119 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
-  },
-  skipButton: {
-    position: 'absolute',
-    top: 60,
-    right: 24,
-    zIndex: 10,
-  },
-  skipText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
+    backgroundColor: '#F0F9F6',
   },
-  iconContainer: {
-    marginBottom: 40,
-  },
-  iconCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-  },
-  emoji: {
-    fontSize: 80,
-  },
-  floatingElements: {
-    ...StyleSheet.absoluteFillObject,
+  illustrationContainer: {
+    width: '100%',
+    height: height * 0.58,
+    backgroundColor: '#C5D9D0',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     overflow: 'hidden',
-  },
-  floatingBubble: {
-    position: 'absolute',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bubble1: {
-    top: '20%',
-    left: '10%',
+  illustrationImage: {
+    width: '100%',
+    height: '100%',
   },
-  bubble2: {
-    top: '15%',
-    right: '15%',
+  contentCard: {
+    width: '90%',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    marginTop: -40,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 6,
   },
-  bubble3: {
-    bottom: '30%',
-    left: '20%',
+  iconWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: 80,
+    backgroundColor: '#D1FAE5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -48,
+    marginBottom: 12,
   },
-  bubbleEmoji: {
-    fontSize: 24,
+  cardIcon: {
+    width: 80,
+    height: 80,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0F172A',
     textAlign: 'center',
-    marginBottom: 16,
-    textShadowColor: 'rgba(0,0,0,0.1)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    marginBottom: 8,
   },
-  description: {
-    fontSize: 18,
-    color: 'rgba(255,255,255,0.9)',
+  cardDescription: {
+    fontSize: 15,
+    color: '#4B5563',
     textAlign: 'center',
-    lineHeight: 26,
-    paddingHorizontal: 16,
+    lineHeight: 22,
   },
   dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
-    gap: 8,
-    zIndex: 100,
+    marginTop: 16,
+    marginBottom: 16,
+    gap: 12,
   },
-  dot: {
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 4,
+  activeDot: {
+    width: 32,
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#10B981',
+    marginHorizontal: 6,
+  },
+  inactiveDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#D1D5DB',
+    marginHorizontal: 6,
+  },
+  skipButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  skipText: {
+    color: '#10B981',
+    fontSize: 14,
+    fontWeight: '600',
   },
   nextButton: {
-    marginHorizontal: 32,
-    marginBottom: 48,
-    backgroundColor: '#fff',
+    backgroundColor: '#10B981',
     borderRadius: 16,
-    paddingVertical: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 100,
-  },
-  buttonContent: {
-    flexDirection: 'row',
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    width: '90%',
+    marginBottom: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#6366F1',
-  },
-  waveContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 100,
-  },
-  wave: {
-    flex: 1,
-    borderTopLeftRadius: 100,
-    borderTopRightRadius: 100,
+    fontWeight: '700',
+    color: '#fff',
   },
 });
