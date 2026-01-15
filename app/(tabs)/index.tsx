@@ -44,14 +44,6 @@ export default function HomeScreen() {
   const sparkleAnim = useRef(new Animated.Value(0)).current;
   const xpIntervalRef = useRef<number | null>(null);
 
-  // Age group labels map
-  const ageGroupLabels: Record<string, string> = {
-    '4-5': '4–5 yaş',
-    '6-7': '6–7 yaş',
-    '8-9': '8–9 yaş',
-    '10-12': '10–12 yaş',
-  };
-
   // Age group default role titles (matches getDefaultNickname)
   const ageDefaultTitles: Record<string, string> = {
     '4-5': 'Küçük Bilim İnsanı',
