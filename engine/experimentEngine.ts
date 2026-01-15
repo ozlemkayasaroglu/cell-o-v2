@@ -141,10 +141,10 @@ const childTermMap: Record<string, Record<string, string>> = {
 function removeMagnification(text: string | undefined): string | undefined {
   if (!text) return text;
   //
-  // - Eşleşen örnekler: '40x', '20x', '100x' (kelime sınırı ile)
+  // - Eşleşen örnekler: '40x', '20x', '100x', '1000x' vb. (kelime sınırı ile)
   // - Ayrıca parantez içindeki veya sonunda gelen '40x,' '40x.' gibi durumları da temizle
   // - Kalan fazla boşlukları düzelt
-  let out = text.replace(/\b\d{1,3}x\b/gi, '');
+  let out = text.replace(/\b\d+x\b/gi, '');
   // Temizlenmiş metinde ardışık boşlukları tekleştir ve baş/son boşlukları kırp
   out = out.replace(/\s{2,}/g, ' ').trim();
   // Eğer parantez içi yalnızca bu ifade ise fazladan parantezi de temizlemeye çalış
