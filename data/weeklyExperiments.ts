@@ -69,7 +69,7 @@ export const weeklyExperiments: Omit<
       },
       {
         stepNumber: 6,
-        instruction: 'Mikroskobun en düşük büyütmesiyle başla, sonra artır.',
+        instruction: 'Düşük büyütmeyle başla, sonra büyütmeyi artır.',
       },
     ],
     safetyNotes: [
@@ -253,7 +253,7 @@ export const weeklyExperiments: Omit<
       },
       {
         stepNumber: 6,
-        instruction: 'Düşük büyütmeyle başla, sonra 40x veya 100x kullan.',
+        instruction: 'Düşük büyütmeyle başla, sonra büyütmeyi artır.',
       },
     ],
     safetyNotes: [
@@ -470,7 +470,7 @@ export const weeklyExperiments: Omit<
       },
       {
         stepNumber: 6,
-        instruction: '40x büyütme ile incele.',
+        instruction: 'Büyütmeyi artırarak incele.',
       },
     ],
     observationGuide: [

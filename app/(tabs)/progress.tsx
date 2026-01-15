@@ -4,7 +4,14 @@
  */
 
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useWeeklyExperiment } from '@/hooks/useWeeklyExperiment';
 import {
@@ -87,133 +94,143 @@ export default function ProgressScreen() {
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: scienceTheme.colors.background }}
+    >
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
 
-      <View style={styles.content}>
-        {/* Profile Card */}
-        <ScienceCard style={styles.profileCard}>
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarEmoji}>🧑‍🔬</Text>
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={styles.profileTitle}>Küçük Bilim İnsanı</Text>
-              <Text style={styles.levelText}>Seviye {level}</Text>
-            </View>
-          </View>
-
-          <View style={styles.xpSection}>
-            <View style={styles.xpHeader}>
-              <Text style={styles.xpLabel}>Deneyim Puanı</Text>
-              <Text style={styles.xpValue}>{totalXP} XP</Text>
-            </View>
-            <ProgressBar
-              current={currentLevelXP}
-              max={100}
-              height={16}
-              color={scienceTheme.colors.primary}
-              showLabel={false}
-            />
-            <Text style={styles.xpSubtext}>
-              Seviye {level + 1} için {100 - currentLevelXP} XP daha
-            </Text>
-          </View>
-        </ScienceCard>
-
-        {/* Stats */}
-        <Text style={styles.sectionTitle}>📊 İstatistikler</Text>
-        <View style={styles.statsRow}>
-          <InfoBox
-            title="Deney"
-            value={experimentsCompleted}
-            icon="🧪"
-            color={scienceTheme.colors.microscope}
-          />
-          <InfoBox
-            title="Rozet"
-            value={earnedBadges.length}
-            icon="🏅"
-            color={scienceTheme.colors.xpGold}
-          />
-          <InfoBox
-            title="Seri"
-            value={progress?.streak || 0}
-            icon="🔥"
-            color={scienceTheme.colors.biology}
-          />
-        </View>
-
-        {/* Achievements */}
-        <Text style={styles.sectionTitle}>
-          🏆 Başarılar ({unlockedCount}/{achievements.length})
-        </Text>
-        <ScienceCard style={styles.achievementsCard}>
-          <View style={styles.achievementsGrid}>
-            {achievements.map((achievement) => (
-              <View key={achievement.id} style={styles.achievementItem}>
-                <BadgeCircle
-                  icon={achievement.icon}
-                  label={achievement.name}
-                  color={
-                    achievement.unlocked ? scienceTheme.colors.xpGold : '#999'
-                  }
-                  size="medium"
-                  locked={!achievement.unlocked}
-                />
-                <Text
-                  style={[
-                    styles.achievementDesc,
-                    !achievement.unlocked && styles.achievementDescLocked,
-                  ]}
-                >
-                  {achievement.desc}
-                </Text>
+        <View style={styles.content}>
+          {/* Profile Card */}
+          <ScienceCard style={styles.profileCard}>
+            <View style={styles.profileHeader}>
+              <View style={styles.avatarCircle}>
+                <Text style={styles.avatarEmoji}>🧑‍🔬</Text>
               </View>
-            ))}
-          </View>
-        </ScienceCard>
+              <View style={styles.profileInfo}>
+                <Text style={styles.profileTitle}>Küçük Bilim İnsanı</Text>
+                <Text style={styles.levelText}>Seviye {level}</Text>
+              </View>
+            </View>
 
-        {/* Earned Badges */}
-        {earnedBadges.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>🎖️ Kazanılan Rozetler</Text>
-            <ScienceCard variant="chemistry" style={styles.badgesCard}>
-              {earnedBadges.map((badge) => (
-                <View key={badge.id} style={styles.badgeRow}>
-                  <Text style={styles.badgeIcon}>{badge.icon}</Text>
-                  <View style={styles.badgeInfo}>
-                    <Text style={styles.badgeName}>{badge.name}</Text>
-                    <Text style={styles.badgeDesc}>{badge.description}</Text>
-                  </View>
+            <View style={styles.xpSection}>
+              <View style={styles.xpHeader}>
+                <Text style={styles.xpLabel}>Deneyim Puanı</Text>
+                <Text style={styles.xpValue}>{totalXP} XP</Text>
+              </View>
+              <ProgressBar
+                current={currentLevelXP}
+                max={100}
+                height={16}
+                color={scienceTheme.colors.primary}
+                showLabel={false}
+              />
+              <Text style={styles.xpSubtext}>
+                Seviye {level + 1} için {100 - currentLevelXP} XP daha
+              </Text>
+            </View>
+          </ScienceCard>
+
+          {/* Stats */}
+          <Text style={styles.sectionTitle}>📊 İstatistikler</Text>
+          <View style={styles.statsRow}>
+            <InfoBox
+              title="Deney"
+              value={experimentsCompleted}
+              icon="🧪"
+              color={scienceTheme.colors.microscope}
+            />
+            <InfoBox
+              title="Rozet"
+              value={earnedBadges.length}
+              icon="🏅"
+              color={scienceTheme.colors.xpGold}
+            />
+            <InfoBox
+              title="Seri"
+              value={progress?.streak || 0}
+              icon="🔥"
+              color={scienceTheme.colors.biology}
+            />
+          </View>
+
+          {/* Achievements */}
+          <Text style={styles.sectionTitle}>
+            🏆 Başarılar ({unlockedCount}/{achievements.length})
+          </Text>
+          <ScienceCard style={styles.achievementsCard}>
+            <View style={styles.achievementsGrid}>
+              {achievements.map((achievement) => (
+                <View key={achievement.id} style={styles.achievementItem}>
+                  <BadgeCircle
+                    icon={achievement.icon}
+                    label={achievement.name}
+                    color={
+                      achievement.unlocked ? scienceTheme.colors.xpGold : '#999'
+                    }
+                    size="medium"
+                    locked={!achievement.unlocked}
+                  />
+                  <Text
+                    style={[
+                      styles.achievementDesc,
+                      !achievement.unlocked && styles.achievementDescLocked,
+                    ]}
+                  >
+                    {achievement.desc}
+                  </Text>
                 </View>
               ))}
-            </ScienceCard>
-          </>
-        )}
+            </View>
+          </ScienceCard>
 
-        {/* Empty State */}
-        {experimentsCompleted === 0 && (
-          <ScienceCard variant="microscope" style={styles.emptyCard}>
-            <Text style={styles.emptyEmoji}>🔬</Text>
-            <Text style={styles.emptyTitle}>İlk Deneyini Yap!</Text>
-            <Text style={styles.emptyText}>
-              XP kazanmak ve seviye atlamak için haftalık deneyleri tamamla!
+          {/* Earned Badges */}
+          {earnedBadges.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>🎖️ Kazanılan Rozetler</Text>
+              <ScienceCard variant="chemistry" style={styles.badgesCard}>
+                {earnedBadges.map((badge) => (
+                  <View key={badge.id} style={styles.badgeRow}>
+                    <Text style={styles.badgeIcon}>{badge.icon}</Text>
+                    <View style={styles.badgeInfo}>
+                      <Text style={styles.badgeName}>{badge.name}</Text>
+                      <Text style={styles.badgeDesc}>{badge.description}</Text>
+                    </View>
+                  </View>
+                ))}
+              </ScienceCard>
+            </>
+          )}
+
+          {/* Empty State */}
+          {experimentsCompleted === 0 && (
+            <ScienceCard variant="microscope" style={styles.emptyCard}>
+              <Text style={styles.emptyEmoji}>🔬</Text>
+              <Text style={styles.emptyTitle}>İlk Deneyini Yap!</Text>
+              <Text style={styles.emptyText}>
+                XP kazanmak ve seviye atlamak için haftalık deneyleri tamamla!
+              </Text>
+            </ScienceCard>
+          )}
+
+          {/* Motivation */}
+          <ScienceCard variant="biology" style={styles.motivationCard}>
+            <Text style={styles.motivationEmoji}>💪</Text>
+            <Text style={styles.motivationTitle}>Devam Et!</Text>
+            <Text style={styles.motivationText}>
+              Her deney seni bir adım daha yaklaştırıyor. Bilim Ustası olmak
+              için keşfetmeye devam et!
             </Text>
           </ScienceCard>
-        )}
-
-        {/* Motivation */}
-        <ScienceCard variant="biology" style={styles.motivationCard}>
-          <Text style={styles.motivationEmoji}>💪</Text>
-          <Text style={styles.motivationTitle}>Devam Et!</Text>
-          <Text style={styles.motivationText}>
-            Her deney seni bir adım daha yaklaştırıyor. Bilim Ustası olmak için
-            keşfetmeye devam et!
-          </Text>
-        </ScienceCard>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

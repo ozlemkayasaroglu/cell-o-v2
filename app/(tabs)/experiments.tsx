@@ -14,6 +14,8 @@ import {
   Modal,
   Animated,
   Dimensions,
+  SafeAreaView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -216,289 +218,295 @@ export default function ExperimentsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerEmoji}>🧪</Text>
-        <Text style={styles.headerTitle}>Haftalık Deneyler</Text>
-        <Text style={styles.headerSubtitle}>
-          Bilim dünyasını keşfetmeye hazır mısın?
-        </Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: scienceTheme.colors.background }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 32 : 16 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerEmoji}>🧪</Text>
+          <Text style={styles.headerTitle}>Haftalık Deneyler</Text>
+          <Text style={styles.headerSubtitle}>
+            Bilim dünyasını keşfetmeye hazır mısın?
+          </Text>
+        </View>
 
-      <View style={styles.content}>
-        {/* Current Week Experiment */}
-        {currentExperiment && (
-          <>
-            <Text style={styles.sectionTitle}>🌟 Bu Haftanın Deneyi</Text>
-            <TouchableOpacity
-              onPress={() => openExperiment(currentExperiment)}
-              activeOpacity={0.9}
-            >
-              <ScienceCard style={styles.currentCard}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.weekBadge}>
-                    <Text style={styles.weekBadgeText}>
-                      Hafta {currentExperiment.weekNumber}
-                    </Text>
+        <View style={styles.content}>
+          {/* Current Week Experiment */}
+          {currentExperiment && (
+            <>
+              <Text style={styles.sectionTitle}>🌟 Bu Haftanın Deneyi</Text>
+              <TouchableOpacity
+                onPress={() => openExperiment(currentExperiment)}
+                activeOpacity={0.9}
+              >
+                <ScienceCard style={styles.currentCard}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.weekBadge}>
+                      <Text style={styles.weekBadgeText}>
+                        Hafta {currentExperiment.weekNumber}
+                      </Text>
+                    </View>
+                    <DifficultyTag difficulty={currentExperiment.difficulty} />
                   </View>
-                  <DifficultyTag difficulty={currentExperiment.difficulty} />
-                </View>
 
-                {/* Age suitability and parent note */}
-                <View style={styles.ageRow}>
-                  {typeof currentExperiment.ageSuitable !== 'undefined' && (
-                    <Text
-                      style={[
-                        styles.ageSuitability,
-                        currentExperiment.ageSuitable ? styles.ageSuitableOk : styles.ageSuitableWarn,
-                      ]}
-                    >
-                      {currentExperiment.ageSuitable ? 'Bu yaşa uygun' : 'Yaş için uyarlanmadı'}
-                    </Text>
-                  )}
-                  {currentExperiment.parentRequired && (
-                    <Text style={styles.parentNote}>👪 Ebeveyn gözetimi önerilir</Text>
-                  )}
-                </View>
-
-               <Text style={styles.experimentTitle}>{currentExperiment.title}</Text>
-                <Text style={styles.experimentDesc} numberOfLines={2}>
-                  {currentExperiment.description}
-                </Text>
-
-                <View style={styles.experimentMeta}>
-                  <View style={styles.metaItem}>
-                    <Text style={styles.metaIcon}>⏱️</Text>
-                    <Text style={styles.metaText}>{currentExperiment.estimatedTime}</Text>
-                  </View>
-                  <View style={styles.metaItem}>
-                    <Text style={styles.metaIcon}>⭐</Text>
-                    <Text style={styles.metaText}>+{currentExperiment.points} XP</Text>
-                  </View>
-                </View>
-
-                <View style={styles.materialsPreview}>
-                  <Text style={styles.materialsTitle}>Malzemeler:</Text>
-                  <View style={styles.materialsRow}>
-                    {currentExperiment.materials.slice(0, 5).map((m, i) => (
-                      <Text key={i} style={styles.materialIcon}>{m.icon}</Text>
-                    ))}
-                    {currentExperiment.materials.length > 5 && (
-                      <Text style={styles.moreText}>+{currentExperiment.materials.length - 5}</Text>
+                  {/* Age suitability and parent note */}
+                  <View style={styles.ageRow}>
+                    {typeof currentExperiment.ageSuitable !== 'undefined' && (
+                      <Text
+                        style={[
+                          styles.ageSuitability,
+                          currentExperiment.ageSuitable ? styles.ageSuitableOk : styles.ageSuitableWarn,
+                        ]}
+                      >
+                        {currentExperiment.ageSuitable ? 'Bu yaşa uygun' : 'Yaş için uyarlanmadı'}
+                      </Text>
+                    )}
+                    {currentExperiment.parentRequired && (
+                      <Text style={styles.parentNote}>👪 Ebeveyn gözetimi önerilir</Text>
                     )}
                   </View>
-                </View>
 
-                <ScienceButton
-                  title="Deneye Başla!"
-                  onPress={() => openExperiment(currentExperiment)}
-                  variant="primary"
-                  size="medium"
-                />
-              </ScienceCard>
-            </TouchableOpacity>
-          </>
-        )}
-
-        {/* Progress */}
-        <Text style={styles.sectionTitle}>📊 İlerleme</Text>
-        <ScienceCard style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Tamamlanan Deneyler</Text>
-            <Text style={styles.progressCount}>
-              {progress?.totalExperimentsCompleted || 0} / 52
-            </Text>
-          </View>
-          <ProgressBar
-            current={progress?.totalExperimentsCompleted || 0}
-            max={52}
-            height={12}
-            color={scienceTheme.colors.accent}
-          />
-        </ScienceCard>
-
-        {/* Tips */}
-        <ScienceCard style={styles.tipsCard}>
-          <Text style={styles.tipsTitle}>💡 Deney İpuçları</Text>
-          <View style={styles.tipsList}>
-            <Text style={styles.tipItem}>• Malzemeleri önceden hazırla</Text>
-            <Text style={styles.tipItem}>• Adımları dikkatlice oku</Text>
-            <Text style={styles.tipItem}>• Gözlemlerini not al</Text>
-            <Text style={styles.tipItem}>• Eğlen ve öğren!</Text>
-          </View>
-        </ScienceCard>
-      </View>
-
-      {/* Experiment Modal */}
-      <Modal
-        visible={showModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowModal(false)}
-      >
-        {selectedExperiment && (
-          <>
-            {/* konfeti overlay */}
-            {showConfetti && (
-              <View pointerEvents="none" style={styles.confettiContainer}>
-                {confettiAnims.current.map((anim, i) => {
-                   const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [-50, SCREEN_HEIGHT] });
-                   const rotate = anim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-                   const leftPercent = confettiLeft.current[i];
-                   const leftStyle = { left: `${leftPercent}%` } as any;
-                   const opacity = anim.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 1, 0] });
-
-                   return (
-                     <Animated.View
-                       key={`c-${i}`}
-                       style={[
-                         styles.confettiPiece,
-                         leftStyle,
-                         {
-                           backgroundColor: confettiColors[i % confettiColors.length],
-                           transform: [{ translateY }, { rotate }],
-                           opacity,
-                         },
-                       ]}
-                     />
-                   );
-                 })}
-
-                {/* Kutlama mesajı */}
-                {celebrationMessage && (
-                  <View style={styles.celebrationMessageBox}>
-                    <Text style={styles.celebrationMessageText}>{celebrationMessage}</Text>
-                  </View>
-                )}
-               </View>
-             )}
-
-            <View style={styles.modalContainer}>
-              {/* Modal Header */}
-              <View style={styles.modalHeader}>
-                <TouchableOpacity
-                  onPress={() => setShowModal(false)}
-                  style={styles.closeButton}
-                >
-                  <Ionicons name="close" size={28} color={scienceTheme.colors.text} />
-                </TouchableOpacity>
-                <Text style={styles.modalTitle}>{selectedExperiment.title}</Text>
-                <View style={styles.stepIndicator}>
-                  <Text style={styles.stepText}>
-                    {currentStep + 1} / {displaySteps.length}
+                 <Text style={styles.experimentTitle}>{currentExperiment.title}</Text>
+                  <Text style={styles.experimentDesc} numberOfLines={2}>
+                    {currentExperiment.description}
                   </Text>
-                </View>
-              </View>
 
-              <ScrollView style={styles.modalContent}>
-                {/* Progress Bar */}
-                <ProgressBar
-                  current={currentStep + 1}
-                  max={displaySteps.length}
-                  height={8}
-                  color={scienceTheme.colors.primary}
-                  showLabel={false}
-                />
-
-                {/* Current Step */}
-                <View style={styles.stepCard}>
-                  <View style={styles.stepHeader}>
-                    <View style={styles.stepNumber}>
-                      <Text style={styles.stepNumberText}>{currentStep + 1}</Text>
+                  <View style={styles.experimentMeta}>
+                    <View style={styles.metaItem}>
+                      <Text style={styles.metaIcon}>⏱️</Text>
+                      <Text style={styles.metaText}>{currentExperiment.estimatedTime}</Text>
                     </View>
-                    <Text style={styles.stepLabel}>Adım</Text>
+                    <View style={styles.metaItem}>
+                      <Text style={styles.metaIcon}>⭐</Text>
+                      <Text style={styles.metaText}>+{currentExperiment.points} XP</Text>
+                    </View>
                   </View>
 
-                  <Text style={styles.stepInstruction}>
-                    {displaySteps[currentStep]?.instruction}
-                  </Text>
+                  <View style={styles.materialsPreview}>
+                    <Text style={styles.materialsTitle}>Malzemeler:</Text>
+                    <View style={styles.materialsRow}>
+                      {currentExperiment.materials.slice(0, 5).map((m, i) => (
+                        <Text key={i} style={styles.materialIcon}>{m.icon}</Text>
+                      ))}
+                      {currentExperiment.materials.length > 5 && (
+                        <Text style={styles.moreText}>+{currentExperiment.materials.length - 5}</Text>
+                      )}
+                    </View>
+                  </View>
 
-                  {displaySteps[currentStep]?.tip && (
-                    <View style={styles.tipBox}>
-                      <Text style={styles.tipBoxIcon}>💡</Text>
-                      <Text style={styles.tipBoxText}>
-                        {displaySteps[currentStep]?.tip}
-                      </Text>
+                  <ScienceButton
+                    title="Deneye Başla!"
+                    onPress={() => openExperiment(currentExperiment)}
+                    variant="primary"
+                    size="medium"
+                  />
+                </ScienceCard>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Progress */}
+          <Text style={styles.sectionTitle}>📊 İlerleme</Text>
+          <ScienceCard style={styles.progressCard}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressTitle}>Tamamlanan Deneyler</Text>
+              <Text style={styles.progressCount}>
+                {progress?.totalExperimentsCompleted || 0} / 52
+              </Text>
+            </View>
+            <ProgressBar
+              current={progress?.totalExperimentsCompleted || 0}
+              max={52}
+              height={12}
+              color={scienceTheme.colors.accent}
+            />
+          </ScienceCard>
+
+          {/* Tips */}
+          <ScienceCard style={styles.tipsCard}>
+            <Text style={styles.tipsTitle}>💡 Deney İpuçları</Text>
+            <View style={styles.tipsList}>
+              <Text style={styles.tipItem}>• Malzemeleri önceden hazırla</Text>
+              <Text style={styles.tipItem}>• Adımları dikkatlice oku</Text>
+              <Text style={styles.tipItem}>• Gözlemlerini not al</Text>
+              <Text style={styles.tipItem}>• Eğlen ve öğren!</Text>
+            </View>
+          </ScienceCard>
+        </View>
+
+        {/* Experiment Modal */}
+        <Modal
+          visible={showModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowModal(false)}
+        >
+          {selectedExperiment && (
+            <>
+              {/* konfeti overlay */}
+              {showConfetti && (
+                <View pointerEvents="none" style={styles.confettiContainer}>
+                  {confettiAnims.current.map((anim, i) => {
+                     const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [-50, SCREEN_HEIGHT] });
+                     const rotate = anim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+                     const leftPercent = confettiLeft.current[i];
+                     const leftStyle = { left: `${leftPercent}%` } as any;
+                     const opacity = anim.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 1, 0] });
+
+                     return (
+                       <Animated.View
+                         key={`c-${i}`}
+                         style={[
+                           styles.confettiPiece,
+                           leftStyle,
+                           {
+                             backgroundColor: confettiColors[i % confettiColors.length],
+                             transform: [{ translateY }, { rotate }],
+                             opacity,
+                           },
+                         ]}
+                       />
+                     );
+                   })}
+
+                  {/* Kutlama mesajı */}
+                  {celebrationMessage && (
+                    <View style={styles.celebrationMessageBox}>
+                      <Text style={styles.celebrationMessageText}>{celebrationMessage}</Text>
+                    </View>
+                  )}
+                 </View>
+               )}
+
+              <View style={styles.modalContainer}>
+                {/* Modal Header */}
+                <View style={styles.modalHeader}>
+                  <TouchableOpacity
+                    onPress={() => setShowModal(false)}
+                    style={styles.closeButton}
+                  >
+                    <Ionicons name="close" size={28} color={scienceTheme.colors.text} />
+                  </TouchableOpacity>
+                  <Text style={styles.modalTitle}>{selectedExperiment.title}</Text>
+                  <View style={styles.stepIndicator}>
+                    <Text style={styles.stepText}>
+                      {currentStep + 1} / {displaySteps.length}
+                    </Text>
+                  </View>
+                </View>
+
+                <ScrollView style={styles.modalContent}>
+                  {/* Progress Bar */}
+                  <ProgressBar
+                    current={currentStep + 1}
+                    max={displaySteps.length}
+                    height={8}
+                    color={scienceTheme.colors.primary}
+                    showLabel={false}
+                  />
+
+                  {/* Current Step */}
+                  <View style={styles.stepCard}>
+                    <View style={styles.stepHeader}>
+                      <View style={styles.stepNumber}>
+                        <Text style={styles.stepNumberText}>{currentStep + 1}</Text>
+                      </View>
+                      <Text style={styles.stepLabel}>Adım</Text>
+                    </View>
+
+                    <Text style={styles.stepInstruction}>
+                      {displaySteps[currentStep]?.instruction}
+                    </Text>
+
+                    {displaySteps[currentStep]?.tip && (
+                      <View style={styles.tipBox}>
+                        <Text style={styles.tipBoxIcon}>💡</Text>
+                        <Text style={styles.tipBoxText}>
+                          {displaySteps[currentStep]?.tip}
+                        </Text>
+                      </View>
+                    )}
+
+                    {displaySteps[currentStep]?.duration && (
+                      <View style={styles.durationBox}>
+                        <Text style={styles.durationIcon}>⏱️</Text>
+                        <Text style={styles.durationText}>
+                          {displaySteps[currentStep]?.duration}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Materials (on first step) */}
+                  {currentStep === 0 && (
+                    <View style={styles.materialsSection}>
+                      <Text style={styles.materialsSectionTitle}>📦 Malzemeler</Text>
+                      <View style={styles.materialsGrid}>
+                        {selectedExperiment.materials.map((material, index) => (
+                          <View key={index} style={styles.materialItem}>
+                            <Text style={styles.materialItemIcon}>{material.icon}</Text>
+                            <Text style={styles.materialItemName}>{material.name}</Text>
+                            {material.optional && (
+                              <Text style={styles.optionalTag}>Opsiyonel</Text>
+                            )}
+                          </View>
+                        ))}
+                      </View>
                     </View>
                   )}
 
-                  {displaySteps[currentStep]?.duration && (
-                    <View style={styles.durationBox}>
-                      <Text style={styles.durationIcon}>⏱️</Text>
-                      <Text style={styles.durationText}>
-                        {displaySteps[currentStep]?.duration}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* Materials (on first step) */}
-                {currentStep === 0 && (
-                  <View style={styles.materialsSection}>
-                    <Text style={styles.materialsSectionTitle}>📦 Malzemeler</Text>
-                    <View style={styles.materialsGrid}>
-                      {selectedExperiment.materials.map((material, index) => (
-                        <View key={index} style={styles.materialItem}>
-                          <Text style={styles.materialItemIcon}>{material.icon}</Text>
-                          <Text style={styles.materialItemName}>{material.name}</Text>
-                          {material.optional && (
-                            <Text style={styles.optionalTag}>Opsiyonel</Text>
-                          )}
-                        </View>
+                  {/* Safety Notes (on first step) */}
+                  {currentStep === 0 && selectedExperiment.safetyNotes && (
+                    <View style={styles.safetySection}>
+                      <Text style={styles.safetySectionTitle}>⚠️ Güvenlik</Text>
+                      {selectedExperiment.safetyNotes.map((note, index) => (
+                        <Text key={index} style={styles.safetyNote}>• {note}</Text>
                       ))}
                     </View>
-                  </View>
-                )}
+                  )}
 
-                {/* Safety Notes (on first step) */}
-                {currentStep === 0 && selectedExperiment.safetyNotes && (
-                  <View style={styles.safetySection}>
-                    <Text style={styles.safetySectionTitle}>⚠️ Güvenlik</Text>
-                    {selectedExperiment.safetyNotes.map((note, index) => (
-                      <Text key={index} style={styles.safetyNote}>• {note}</Text>
-                    ))}
-                  </View>
-                )}
+                  {/* Expected Results (on last step) */}
+                  {currentStep === displaySteps.length - 1 && (
+                    <View style={styles.resultsSection}>
+                      <Text style={styles.resultsSectionTitle}>🔍 Beklenen Sonuçlar</Text>
+                      {selectedExperiment.expectedResults.map((result, index) => (
+                        <Text key={index} style={styles.resultItem}>✓ {result}</Text>
+                      ))}
+                    </View>
+                  )}
+                </ScrollView>
 
-                {/* Expected Results (on last step) */}
-                {currentStep === displaySteps.length - 1 && (
-                  <View style={styles.resultsSection}>
-                    <Text style={styles.resultsSectionTitle}>🔍 Beklenen Sonuçlar</Text>
-                    {selectedExperiment.expectedResults.map((result, index) => (
-                      <Text key={index} style={styles.resultItem}>✓ {result}</Text>
-                    ))}
-                  </View>
-                )}
-              </ScrollView>
+                {/* Modal Footer */}
+                <View style={styles.modalFooter}>
+                  {currentStep > 0 && (
+                    <TouchableOpacity onPress={prevStep} style={styles.prevButton}>
+                      <Ionicons name="chevron-back" size={24} color={scienceTheme.colors.primary} />
+                      <Text style={styles.prevButtonText}>Önceki</Text>
+                    </TouchableOpacity>
+                  )}
 
-              {/* Modal Footer */}
-              <View style={styles.modalFooter}>
-                {currentStep > 0 && (
-                  <TouchableOpacity onPress={prevStep} style={styles.prevButton}>
-                    <Ionicons name="chevron-back" size={24} color={scienceTheme.colors.primary} />
-                    <Text style={styles.prevButtonText}>Önceki</Text>
-                  </TouchableOpacity>
-                )}
+                  <View style={styles.footerSpacer} />
 
-                <View style={styles.footerSpacer} />
-
-                {currentStep < displaySteps.length - 1 ? (
-                  <TouchableOpacity onPress={nextStep} style={styles.nextButton}>
-                    <Text style={styles.nextButtonText}>Sonraki</Text>
-                    <Ionicons name="chevron-forward" size={24} color="#FFF" />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
-                    <Text style={styles.completeButtonText}>Tamamla! 🎉</Text>
-                  </TouchableOpacity>
-                )}
+                  {currentStep < displaySteps.length - 1 ? (
+                    <TouchableOpacity onPress={nextStep} style={styles.nextButton}>
+                      <Text style={styles.nextButtonText}>Sonraki</Text>
+                      <Ionicons name="chevron-forward" size={24} color="#FFF" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
+                      <Text style={styles.completeButtonText}>Tamamla! 🎉</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-            </View>
-          </>
-        )}
-      </Modal>
-    </ScrollView>
+            </>
+          )}
+        </Modal>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

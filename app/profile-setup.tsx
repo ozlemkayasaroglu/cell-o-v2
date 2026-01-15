@@ -7,7 +7,9 @@ import {
   TextInput,
   ScrollView,
   Dimensions,
+  Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -95,120 +97,122 @@ export default function ProfileSetupScreen() {
   const selectedAvatarData = avatars.find((a) => a.id === selectedAvatar);
 
   return (
-    <LinearGradient colors={['#14B8A6', '#0D9488']} style={styles.container}>
-      {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipText}>Atla</Text>
-      </TouchableOpacity>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerEmoji}>🎨</Text>
-          <Text style={styles.title}>Profilini Oluştur!</Text>
-          <Text style={styles.subtitle}>
-            İstersen bir takma ad ve avatar seç
-          </Text>
-        </View>
-
-        {/* Nickname Input */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Takma Adın</Text>
-          <View style={styles.inputContainer}>
-            <Ionicons name="person" size={20} color="#0D9488" />
-            <TextInput
-              style={styles.input}
-              placeholder="Örn: Süper Kaşif"
-              placeholderTextColor="#99E2D8"
-              value={nickname}
-              onChangeText={setNickname}
-              maxLength={20}
-            />
-          </View>
-        </View>
-
-        {/* Avatar Selection */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Avatarını Seç</Text>
-          <View style={styles.avatarGrid}>
-            {avatars.map((avatar) => (
-              <TouchableOpacity
-                key={avatar.id}
-                style={[
-                  styles.avatarItem,
-                  selectedAvatar === avatar.id && styles.avatarItemSelected,
-                ]}
-                onPress={() => setSelectedAvatar(avatar.id)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.avatarEmoji}>{avatar.emoji}</Text>
-                {selectedAvatar === avatar.id && (
-                  <View style={styles.checkBadge}>
-                    <Ionicons name="checkmark" size={12} color="#fff" />
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Age Group Selection */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Yaş Grubun</Text>
-          <View style={styles.ageGrid}>
-            {ageGroups.map((age) => (
-              <TouchableOpacity
-                key={age.id}
-                style={[
-                  styles.ageItem,
-                  selectedAge === age.id && styles.ageItemSelected,
-                ]}
-                onPress={() => setSelectedAge(age.id)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.ageEmoji}>{age.emoji}</Text>
-                <Text
-                  style={[
-                    styles.ageLabel,
-                    selectedAge === age.id && styles.ageLabelSelected,
-                  ]}
-                >
-                  {age.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Preview */}
-        <View style={styles.previewCard}>
-          <Text style={styles.previewEmoji}>{selectedAvatarData?.emoji}</Text>
-          <Text style={styles.previewName}>
-            {nickname.trim() || 'Küçük Bilim İnsanı'}
-          </Text>
-          <Text style={styles.previewAge}>
-            {ageGroups.find((a) => a.id === selectedAge)?.label}
-          </Text>
-        </View>
-
-        {/* Continue Button */}
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleContinue}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.continueText}>Hazırım! 🚀</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <LinearGradient colors={['#14B8A6', '#0D9488']} style={styles.container}>
+        {/* Skip Button */}
+        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+          <Text style={styles.skipText}>Atla</Text>
         </TouchableOpacity>
 
-        {/* Privacy Note */}
-        <Text style={styles.privacyNote}>
-          🔒 Bilgilerin sadece bu cihazda saklanır
-        </Text>
-      </ScrollView>
-    </LinearGradient>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerEmoji}>🎨</Text>
+            <Text style={styles.title}>Profilini Oluştur!</Text>
+            <Text style={styles.subtitle}>
+              İstersen bir takma ad ve avatar seç
+            </Text>
+          </View>
+
+          {/* Nickname Input */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Takma Adın</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="person" size={20} color="#0D9488" />
+              <TextInput
+                style={styles.input}
+                placeholder="Örn: Süper Kaşif"
+                placeholderTextColor="#99E2D8"
+                value={nickname}
+                onChangeText={setNickname}
+                maxLength={20}
+              />
+            </View>
+          </View>
+
+          {/* Avatar Selection */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Avatarını Seç</Text>
+            <View style={styles.avatarGrid}>
+              {avatars.map((avatar) => (
+                <TouchableOpacity
+                  key={avatar.id}
+                  style={[
+                    styles.avatarItem,
+                    selectedAvatar === avatar.id && styles.avatarItemSelected,
+                  ]}
+                  onPress={() => setSelectedAvatar(avatar.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.avatarEmoji}>{avatar.emoji}</Text>
+                  {selectedAvatar === avatar.id && (
+                    <View style={styles.checkBadge}>
+                      <Ionicons name="checkmark" size={12} color="#fff" />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Age Group Selection */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Yaş Grubun</Text>
+            <View style={styles.ageGrid}>
+              {ageGroups.map((age) => (
+                <TouchableOpacity
+                  key={age.id}
+                  style={[
+                    styles.ageItem,
+                    selectedAge === age.id && styles.ageItemSelected,
+                  ]}
+                  onPress={() => setSelectedAge(age.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.ageEmoji}>{age.emoji}</Text>
+                  <Text
+                    style={[
+                      styles.ageLabel,
+                      selectedAge === age.id && styles.ageLabelSelected,
+                    ]}
+                  >
+                    {age.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Preview */}
+          <View style={styles.previewCard}>
+            <Text style={styles.previewEmoji}>{selectedAvatarData?.emoji}</Text>
+            <Text style={styles.previewName}>
+              {nickname.trim() || 'Küçük Bilim İnsanı'}
+            </Text>
+            <Text style={styles.previewAge}>
+              {ageGroups.find((a) => a.id === selectedAge)?.label}
+            </Text>
+          </View>
+
+          {/* Continue Button */}
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleContinue}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.continueText}>Hazırım! 🚀</Text>
+          </TouchableOpacity>
+
+          {/* Privacy Note */}
+          <Text style={styles.privacyNote}>
+            🔒 Bilgilerin sadece bu cihazda saklanır
+          </Text>
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 
@@ -365,11 +369,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+        }),
   },
   continueText: {
     fontSize: 18,
@@ -383,3 +391,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
 });
+
+// pointerEvents uyarısı için örnek kullanım:
+// <View style={{ pointerEvents: 'none' }}> yerine kullanabilirsiniz.

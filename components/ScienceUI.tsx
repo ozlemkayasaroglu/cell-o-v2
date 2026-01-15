@@ -99,7 +99,8 @@ export function ScienceButton({
             paddingHorizontal: sizes.paddingHorizontal,
           },
           scienceTheme.shadows.medium,
-        ]}>
+        ]}
+      >
         <View style={styles.buttonContent}>
           {icon && <View style={styles.buttonIcon}>{icon}</View>}
           <Text
@@ -109,7 +110,8 @@ export function ScienceButton({
                 color: disabled ? '#888' : colors.text,
                 fontSize: sizes.fontSize,
               },
-            ]}>
+            ]}
+          >
             {title}
           </Text>
         </View>
@@ -121,11 +123,21 @@ export function ScienceButton({
 // ============ KART ============
 interface ScienceCardProps {
   children: React.ReactNode;
-  variant?: 'default' | 'microscope' | 'chemistry' | 'biology' | 'physics' | 'gradient';
+  variant?:
+    | 'default'
+    | 'microscope'
+    | 'chemistry'
+    | 'biology'
+    | 'physics'
+    | 'gradient';
   style?: ViewStyle;
 }
 
-export function ScienceCard({ children, variant = 'default', style }: ScienceCardProps) {
+export function ScienceCard({
+  children,
+  variant = 'default',
+  style,
+}: ScienceCardProps) {
   const variantStyles = {
     default: {
       bg: scienceTheme.colors.cardBg,
@@ -164,7 +176,8 @@ export function ScienceCard({ children, variant = 'default', style }: ScienceCar
         },
         scienceTheme.shadows.small,
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );
@@ -180,11 +193,11 @@ interface ProgressBarProps {
   color?: string;
 }
 
-export function ProgressBar({ 
-  current, 
-  max, 
-  level, 
-  showLabel = true, 
+export function ProgressBar({
+  current,
+  max,
+  level,
+  showLabel = true,
   height = 16,
   color = scienceTheme.colors.primary,
 }: ProgressBarProps) {
@@ -242,9 +255,13 @@ export function DifficultyTag({ difficulty }: DifficultyTagProps) {
   const info = difficultyInfo[difficulty];
 
   return (
-    <View style={[styles.difficultyTag, { backgroundColor: info.color + '20' }]}>
+    <View
+      style={[styles.difficultyTag, { backgroundColor: info.color + '20' }]}
+    >
       <Text style={styles.difficultyIcon}>{info.icon}</Text>
-      <Text style={[styles.difficultyLabel, { color: info.color }]}>{info.label}</Text>
+      <Text style={[styles.difficultyLabel, { color: info.color }]}>
+        {info.label}
+      </Text>
     </View>
   );
 }
@@ -258,9 +275,9 @@ interface BadgeCircleProps {
   locked?: boolean;
 }
 
-export function BadgeCircle({ 
-  icon, 
-  label, 
+export function BadgeCircle({
+  icon,
+  label,
   color = scienceTheme.colors.primary,
   size = 'medium',
   locked = false,
@@ -275,22 +292,33 @@ export function BadgeCircle({
 
   return (
     <View style={styles.badgeContainer}>
-      <View 
+      <View
         style={[
-          styles.badgeCircle, 
-          { 
-            width: sizes.width, 
+          styles.badgeCircle,
+          {
+            width: sizes.width,
             height: sizes.height,
             backgroundColor: locked ? '#E0E0E0' : color + '20',
             borderColor: locked ? '#BDBDBD' : color,
-          }
-        ]}>
-        <Text style={[styles.badgeIcon, { fontSize: sizes.fontSize, opacity: locked ? 0.3 : 1 }]}>
+          },
+        ]}
+      >
+        <Text
+          style={[
+            styles.badgeIcon,
+            { fontSize: sizes.fontSize, opacity: locked ? 0.3 : 1 },
+          ]}
+        >
           {locked ? '🔒' : icon}
         </Text>
       </View>
       {label && (
-        <Text style={[styles.badgeLabel, { color: locked ? '#999' : scienceTheme.colors.text }]}>
+        <Text
+          style={[
+            styles.badgeLabel,
+            { color: locked ? '#999' : scienceTheme.colors.text },
+          ]}
+        >
           {label}
         </Text>
       )}
@@ -306,7 +334,12 @@ interface InfoBoxProps {
   color?: string;
 }
 
-export function InfoBox({ title, value, icon, color = scienceTheme.colors.primary }: InfoBoxProps) {
+export function InfoBox({
+  title,
+  value,
+  icon,
+  color = scienceTheme.colors.primary,
+}: InfoBoxProps) {
   return (
     <View style={[styles.infoBox, { backgroundColor: color + '10' }]}>
       <Text style={styles.infoIcon}>{icon}</Text>
@@ -323,12 +356,22 @@ interface MaterialTagProps {
   optional?: boolean;
 }
 
-export function MaterialTag({ name, icon, optional = false }: MaterialTagProps) {
+export function MaterialTag({
+  name,
+  icon,
+  optional = false,
+}: MaterialTagProps) {
   return (
     <View style={[styles.materialTag, optional && styles.materialTagOptional]}>
       <Text style={styles.materialIcon}>{icon}</Text>
-      <Text style={[styles.materialName, optional && styles.materialNameOptional]}>{name}</Text>
-      {optional && <Text style={styles.materialOptionalLabel}>(opsiyonel)</Text>}
+      <Text
+        style={[styles.materialName, optional && styles.materialNameOptional]}
+      >
+        {name}
+      </Text>
+      {optional && (
+        <Text style={styles.materialOptionalLabel}>(opsiyonel)</Text>
+      )}
     </View>
   );
 }
@@ -343,34 +386,41 @@ interface StepCardProps {
   isCompleted?: boolean;
 }
 
-export function StepCard({ 
-  stepNumber, 
-  instruction, 
-  tip, 
+export function StepCard({
+  stepNumber,
+  instruction,
+  tip,
   duration,
   isActive = false,
   isCompleted = false,
 }: StepCardProps) {
   return (
-    <View style={[
-      styles.stepCard,
-      isActive && styles.stepCardActive,
-      isCompleted && styles.stepCardCompleted,
-    ]}>
-      <View style={[
-        styles.stepNumber,
-        { backgroundColor: isCompleted ? scienceTheme.colors.success : 
-          isActive ? scienceTheme.colors.primary : '#E0E0E0' }
-      ]}>
+    <View
+      style={[
+        styles.stepCard,
+        isActive && styles.stepCardActive,
+        isCompleted && styles.stepCardCompleted,
+      ]}
+    >
+      <View
+        style={[
+          styles.stepNumber,
+          {
+            backgroundColor: isCompleted
+              ? scienceTheme.colors.success
+              : isActive
+              ? scienceTheme.colors.primary
+              : '#E0E0E0',
+          },
+        ]}
+      >
         <Text style={styles.stepNumberText}>
           {isCompleted ? '✓' : stepNumber}
         </Text>
       </View>
       <View style={styles.stepContent}>
         <Text style={styles.stepInstruction}>{instruction}</Text>
-        {duration && (
-          <Text style={styles.stepDuration}>⏱️ {duration}</Text>
-        )}
+        {duration && <Text style={styles.stepDuration}>⏱️ {duration}</Text>}
         {tip && (
           <View style={styles.stepTip}>
             <Text style={styles.stepTipIcon}>💡</Text>
@@ -392,13 +442,13 @@ interface SuccessPopupProps {
   onClose: () => void;
 }
 
-export function SuccessPopup({ 
-  visible, 
-  title, 
-  message, 
-  xpEarned, 
+export function SuccessPopup({
+  visible,
+  title,
+  message,
+  xpEarned,
   badgeEarned,
-  onClose 
+  onClose,
 }: SuccessPopupProps) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -432,33 +482,30 @@ export function SuccessPopup({
 
   return (
     <View style={styles.popupOverlay}>
-      <Animated.View 
-        style={[
-          styles.successPopup,
-          { transform: [{ scale: scaleAnim }] }
-        ]}>
-        <Animated.Text 
-          style={[styles.popupEmoji, { transform: [{ rotate }] }]}>
+      <Animated.View
+        style={[styles.successPopup, { transform: [{ scale: scaleAnim }] }]}
+      >
+        <Animated.Text style={[styles.popupEmoji, { transform: [{ rotate }] }]}>
           🎉
         </Animated.Text>
         <Text style={styles.popupTitle}>{title}</Text>
         <Text style={styles.popupMessage}>{message}</Text>
-        
+
         {xpEarned && (
           <View style={styles.xpEarnedBox}>
             <Text style={styles.xpEarnedText}>+{xpEarned} XP</Text>
           </View>
         )}
-        
+
         {badgeEarned && (
           <View style={styles.badgeEarnedBox}>
             <Text style={styles.badgeEarnedIcon}>{badgeEarned.icon}</Text>
             <Text style={styles.badgeEarnedName}>{badgeEarned.name}</Text>
           </View>
         )}
-        
-        <ScienceButton 
-          title="Harika!" 
+
+        <ScienceButton
+          title="Harika!"
           onPress={onClose}
           variant="success"
           size="large"

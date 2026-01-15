@@ -1,104 +1,79 @@
 /**
- * Science Lab Theme - Çocuk Dostu Bilim Teması
- * Doğa temalı, eğlenceli ve bilimsel görünüm
+ * Science Lab Theme - onboarding-lab.png renk paleti
+ * Sıcak, pastel ve doğa temalı modern renkler
  */
 
 export const scienceTheme = {
   colors: {
-    // Ana renkler - Doğa teması
-    primary: '#0D9488',      // Teal - ana renk
-    secondary: '#F59E0B',    // Amber - ikincil
-    accent: '#10B981',       // Yeşil - vurgu
-    
-    // Bilim renkleri
-    microscope: '#0891B2',   // Cyan - mikroskop
-    chemistry: '#16A34A',    // Yeşil - kimya
-    biology: '#EA580C',      // Turuncu - biyoloji
-    physics: '#0284C7',      // Mavi - fizik
-    
-    // Arka plan
-    background: '#F0FDF9',   // Açık mint
-    cardBg: '#FFFFFF',
-    darkBg: '#134E4A',
-    
-    // Metin
-    text: '#1F2937',
-    textLight: '#6B7280',
-    textWhite: '#FFFFFF',
-    
-    // Durum renkleri
-    success: '#22C55E',
-    warning: '#F59E0B',
-    error: '#EF4444',
-    info: '#0EA5E9',
-    
-    // XP ve level
-    xpGreen: '#14B8A6',
-    xpGold: '#F59E0B',
-    
-    // Zorluk renkleri
-    easy: '#86EFAC',
-    medium: '#FDE047', 
-    hard: '#FB923C',
-    expert: '#F87171',
-    
-    // Dekoratif
-    bubbleBlue: '#ECFEFF',
-    bubblePink: '#FFF1F2',
-    bubbleGreen: '#F0FDF4',
-    bubbleYellow: '#FEFCE8',
+    // Ana renkler
+    primary: '#14B8A6', // Canlı teal
+    secondary: '#FBBF24', // Pastel sarı
+    accent: '#34D399', // Açık yeşil
+    background: '#F0FDF4', // Sıcak mint
+    cardBg: '#FFFFFF', // Beyaz kart
+    earth: '#F5E9DA', // Toprak/bej
+    blue: '#38BDF8', // Pastel mavi
+    pink: '#FCE7F3', // Pastel pembe
+    warning: '#F59E0B', // Sarı-turuncu
+    success: '#22C55E', // Yeşil
+    error: '#EF4444', // Kırmızı
+    text: '#1E293B', // Koyu mavi-gri
+    textLight: '#64748B', // Açık gri-mavi
   },
-  
+
   shadows: {
     small: {
-      shadowColor: '#6C63FF',
+      shadowColor: '#14B8A6',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
       elevation: 2,
     },
     medium: {
-      shadowColor: '#6C63FF',
+      shadowColor: '#14B8A6',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
+      shadowOpacity: 0.12,
+      shadowRadius: 12,
       elevation: 4,
     },
     large: {
-      shadowColor: '#6C63FF',
+      shadowColor: '#14B8A6',
       shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.2,
-      shadowRadius: 16,
+      shadowOpacity: 0.16,
+      shadowRadius: 24,
       elevation: 8,
     },
   },
-  
+
   borderRadius: {
-    small: 8,
-    medium: 16,
-    large: 24,
+    small: 12,
+    medium: 20,
+    large: 32,
     full: 100,
   },
 };
 
-// Kategori renkleri
+// Kategori renkleri (paletten türetildi)
 export const categoryColors: Record<string, string> = {
-  'Mikroskop Gözlemi': '#7C4DFF',
-  'Hücre Biyolojisi': '#FF6E40',
-  'Mikroorganizmalar': '#00E676',
-  'Kristal Oluşumu': '#00D9FF',
-  'Bitki Anatomisi': '#8BC34A',
-  'Su Yaşamı': '#03A9F4',
-  'Mantarlar': '#FF7043',
-  'Kimyasal Reaksiyon': '#E91E63',
+  'Mikroskop Gözlemi': '#38BDF8', // mavi
+  'Hücre Biyolojisi': '#34D399', // yeşil
+  Mikroorganizmalar: '#FBBF24', // sarı
+  'Kristal Oluşumu': '#FCE7F3', // pembe
+  'Bitki Anatomisi': '#A7F3D0', // mint
+  'Su Yaşamı': '#14B8A6', // teal
+  Mantarlar: '#F5E9DA', // toprak
+  'Kimyasal Reaksiyon': '#F59E0B', // turuncu
 };
 
-// Zorluk bilgileri
-export const difficultyInfo: Record<string, { color: string; label: string; icon: string }> = {
-  'kolay': { color: '#81C784', label: 'Kolay', icon: '⭐' },
-  'orta': { color: '#FFD54F', label: 'Orta', icon: '⭐⭐' },
-  'zor': { color: '#FF8A65', label: 'Zor', icon: '⭐⭐⭐' },
-  'uzman': { color: '#BA68C8', label: 'Uzman', icon: '🏆' },
+// Zorluk bilgileri (paletten türetildi)
+export const difficultyInfo: Record<
+  string,
+  { color: string; label: string; icon: string }
+> = {
+  kolay: { color: '#A7F3D0', label: 'Kolay', icon: '⭐' },
+  orta: { color: '#FBBF24', label: 'Orta', icon: '⭐⭐' },
+  zor: { color: '#38BDF8', label: 'Zor', icon: '⭐⭐⭐' },
+  uzman: { color: '#F59E0B', label: 'Uzman', icon: '🏆' },
 };
 
 export default scienceTheme;

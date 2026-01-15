@@ -11,6 +11,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
+  SafeAreaView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -61,12 +63,12 @@ export default function HomeScreen() {
         Animated.timing(floatAnim, {
           toValue: -10,
           duration: 1500,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.timing(floatAnim, {
           toValue: 0,
           duration: 1500,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ])
     ).start();
@@ -77,12 +79,12 @@ export default function HomeScreen() {
         Animated.timing(sparkleAnim, {
           toValue: 1,
           duration: 2000,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.timing(sparkleAnim, {
           toValue: 0,
           duration: 2000,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ])
     ).start();
@@ -145,225 +147,243 @@ export default function HomeScreen() {
   });
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Animated.View
-            style={[
-              styles.iconContainer,
-              { transform: [{ translateY: floatAnim }] },
-            ]}
-          >
-            <Text style={styles.headerEmoji}>🔬</Text>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: scienceTheme.colors.background }}
+    >
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
             <Animated.View
-              style={[styles.sparkle, { opacity: sparkleOpacity }]}
-            >
-              <Sparkles size={20} color="#FFD700" />
-            </Animated.View>
-          </Animated.View>
-          <Text style={styles.title}>Küçük Bilim İnsanı</Text>
-          <Text style={styles.subtitle}>
-            Mikro dünyanın harikalarını keşfet!
-          </Text>
-        </View>
-
-        {/* Decorative bubbles */}
-        <View style={[styles.bubble, styles.bubble1]} />
-        <View style={[styles.bubble, styles.bubble2]} />
-        <View style={[styles.bubble, styles.bubble3]} />
-      </View>
-
-      <View style={styles.content}>
-        {/* Screen Time Card */}
-        <ScienceCard style={styles.screenTimeCard}>
-          <View style={styles.screenTimeHeader}>
-            <Text style={styles.screenTimeTitle}>⏰ Bugünkü Süren</Text>
-            <View
               style={[
-                styles.screenTimeBadge,
-                screenTime.isLimitReached && styles.screenTimeBadgeWarning,
+                styles.iconContainer,
+                { transform: [{ translateY: floatAnim }] },
               ]}
             >
-              <Text
-                style={[
-                  styles.screenTimeBadgeText,
-                  screenTime.isLimitReached &&
-                    styles.screenTimeBadgeTextWarning,
-                ]}
+              <Text style={styles.headerEmoji}>🔬</Text>
+              <Animated.View
+                style={[styles.sparkle, { opacity: sparkleOpacity }]}
               >
-                {screenTime.ageGroup} yaş
-              </Text>
-            </View>
+                <Sparkles size={20} color="#FFD700" />
+              </Animated.View>
+            </Animated.View>
+            <Text style={styles.title}>Küçük Bilim İnsanı</Text>
+            <Text style={styles.subtitle}>
+              Mikro dünyanın harikalarını keşfet!
+            </Text>
           </View>
 
-          <View style={styles.screenTimeContent}>
-            <View style={styles.screenTimeInfo}>
-              <Text style={styles.screenTimeUsed}>
-                {screenTime.usedFormatted}
-              </Text>
-              <Text style={styles.screenTimeLimit}>
-                / {screenTime.dailyLimitMinutes} dk
-              </Text>
-            </View>
-
-            <View style={styles.screenTimeRemaining}>
-              <Text style={styles.screenTimeRemainingLabel}>Kalan:</Text>
-              <Text
-                style={[
-                  styles.screenTimeRemainingValue,
-                  screenTime.isLimitReached && styles.screenTimeWarning,
-                ]}
-              >
-                {screenTime.remainingFormatted}
-              </Text>
-            </View>
-          </View>
-
-          <ProgressBar
-            current={screenTime.percentUsed}
-            max={100}
-            height={12}
-            color={
-              screenTime.percentUsed > 80
-                ? '#EF4444'
-                : screenTime.percentUsed > 50
-                ? '#F59E0B'
-                : scienceTheme.colors.primary
-            }
-            showLabel={false}
-          />
-
-          {screenTime.isLimitReached && (
-            <View style={styles.screenTimeWarningBox}>
-              <Text style={styles.screenTimeWarningText}>
-                ⚠️ Bugünlük süren doldu! Haftaya tekrar gel 🌙
-              </Text>
-            </View>
-          )}
-        </ScienceCard>
-        {/* This Week's Experiment */}
-        <Text style={styles.sectionTitle}>🧪 Bu Haftanın Deneyi</Text>
-
-        {loading ? (
-          <ScienceCard>
-            <Text style={styles.loadingText}>Deney yükleniyor...</Text>
-          </ScienceCard>
-        ) : currentExperiment ? (
-          <TouchableOpacity onPress={navigateToExperiments} activeOpacity={0.9}>
-            <ScienceCard variant="microscope" style={styles.experimentCard}>
-              <View style={styles.experimentHeader}>
-                <View style={styles.weekBadge}>
-                  <Text style={styles.weekBadgeText}>
-                    Hafta {currentExperiment.weekNumber}
-                  </Text>
-                </View>
-                <DifficultyTag difficulty={currentExperiment.difficulty} />
-              </View>
-
-              <Text style={styles.experimentTitle}>
-                {currentExperiment.title}
-              </Text>
-              <Text style={styles.experimentDesc} numberOfLines={2}>
-                {currentExperiment.description}
-              </Text>
-
-              <View style={styles.experimentFooter}>
-                <View style={styles.experimentInfo}>
-                  <Text style={styles.experimentInfoText}>
-                    ⏱️ {currentExperiment.estimatedTime}
-                  </Text>
-                  <Text style={styles.experimentInfoText}>
-                    ⭐ +{currentExperiment.points} XP
-                  </Text>
-                </View>
-                <View style={styles.arrowCircle}>
-                  <ChevronRight size={20} color={scienceTheme.colors.primary} />
-                </View>
-              </View>
-            </ScienceCard>
-          </TouchableOpacity>
-        ) : (
-          <ScienceCard style={styles.emptyCard}>
-            <Text style={styles.emptyEmoji}>🎉</Text>
-            <Text style={styles.emptyText}>Tüm deneyler tamamlandı!</Text>
-          </ScienceCard>
-        )}
-
-        {/* Stats */}
-        <View style={styles.statsRow}>
-          <InfoBox
-            title="Deney"
-            value={progress?.totalExperimentsCompleted || 0}
-            icon="🧪"
-            color={scienceTheme.colors.chemistry}
-          />
-          <InfoBox
-            title="Rozet"
-            value={progress?.badges?.length || 0}
-            icon="🏅"
-            color={scienceTheme.colors.accent}
-          />
-          <InfoBox
-            title="Seri"
-            value={progress?.streak || 0}
-            icon="🔥"
-            color={scienceTheme.colors.biology}
-          />
+          {/* Decorative bubbles */}
+          <View style={[styles.bubble, styles.bubble1]} />
+          <View style={[styles.bubble, styles.bubble2]} />
+          <View style={[styles.bubble, styles.bubble3]} />
         </View>
 
-        {/* İlerleme Detayları Kartı */}
-        <ScienceCard style={styles.progressDetailsCard}>
-          <Text style={styles.progressDetailsTitle}>📈 İlerleme Detayları</Text>
-          {progress ? (
-            <View style={styles.progressDetailsBody}>
-              <View style={styles.progressRow}>
-                <Text style={styles.progressLabel}>Toplam XP</Text>
-                <Text style={styles.progressValue}>{totalXP} XP</Text>
+        <View style={styles.content}>
+          {/* Screen Time Card */}
+          <ScienceCard style={styles.screenTimeCard}>
+            <View style={styles.screenTimeHeader}>
+              <Text style={styles.screenTimeTitle}>⏰ Bugünkü Süren</Text>
+              <View
+                style={[
+                  styles.screenTimeBadge,
+                  screenTime.isLimitReached && styles.screenTimeBadgeWarning,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.screenTimeBadgeText,
+                    screenTime.isLimitReached &&
+                      styles.screenTimeBadgeTextWarning,
+                  ]}
+                >
+                  {screenTime.ageGroup} yaş
+                </Text>
               </View>
+            </View>
 
-              <View style={styles.progressRow}>
-                <Text style={styles.progressLabel}>Tamamlanan Deney</Text>
-                <Text style={styles.progressValue}>
-                  {progress.totalExperimentsCompleted}
+            <View style={styles.screenTimeContent}>
+              <View style={styles.screenTimeInfo}>
+                <Text style={styles.screenTimeUsed}>
+                  {screenTime.usedFormatted}
+                </Text>
+                <Text style={styles.screenTimeLimit}>
+                  / {screenTime.dailyLimitMinutes} dk
                 </Text>
               </View>
 
-              <View style={styles.progressRow}>
-                <Text style={styles.progressLabel}>Seri (Gün)</Text>
-                <Text style={styles.progressValue}>{progress.streak}</Text>
+              <View style={styles.screenTimeRemaining}>
+                <Text style={styles.screenTimeRemainingLabel}>Kalan:</Text>
+                <Text
+                  style={[
+                    styles.screenTimeRemainingValue,
+                    screenTime.isLimitReached && styles.screenTimeWarning,
+                  ]}
+                >
+                  {screenTime.remainingFormatted}
+                </Text>
               </View>
             </View>
+
+            <ProgressBar
+              current={screenTime.percentUsed}
+              max={100}
+              height={12}
+              color={
+                screenTime.percentUsed > 80
+                  ? '#EF4444'
+                  : screenTime.percentUsed > 50
+                  ? '#F59E0B'
+                  : scienceTheme.colors.primary
+              }
+              showLabel={false}
+            />
+
+            {screenTime.isLimitReached && (
+              <View style={styles.screenTimeWarningBox}>
+                <Text style={styles.screenTimeWarningText}>
+                  ⚠️ Bugünlük süren doldu! Haftaya tekrar gel 🌙
+                </Text>
+              </View>
+            )}
+          </ScienceCard>
+          {/* This Week's Experiment */}
+          <Text style={styles.sectionTitle}>🧪 Bu Haftanın Deneyi</Text>
+
+          {loading ? (
+            <ScienceCard>
+              <Text style={styles.loadingText}>Deney yükleniyor...</Text>
+            </ScienceCard>
+          ) : currentExperiment ? (
+            <TouchableOpacity
+              onPress={navigateToExperiments}
+              activeOpacity={0.9}
+            >
+              <ScienceCard variant="microscope" style={styles.experimentCard}>
+                <View style={styles.experimentHeader}>
+                  <View style={styles.weekBadge}>
+                    <Text style={styles.weekBadgeText}>
+                      Hafta {currentExperiment.weekNumber}
+                    </Text>
+                  </View>
+                  <DifficultyTag difficulty={currentExperiment.difficulty} />
+                </View>
+
+                <Text style={styles.experimentTitle}>
+                  {currentExperiment.title}
+                </Text>
+                <Text style={styles.experimentDesc} numberOfLines={2}>
+                  {currentExperiment.description}
+                </Text>
+
+                <View style={styles.experimentFooter}>
+                  <View style={styles.experimentInfo}>
+                    <Text style={styles.experimentInfoText}>
+                      ⏱️ {currentExperiment.estimatedTime}
+                    </Text>
+                    <Text style={styles.experimentInfoText}>
+                      ⭐ +{currentExperiment.points} XP
+                    </Text>
+                  </View>
+                  <View style={styles.arrowCircle}>
+                    <ChevronRight
+                      size={20}
+                      color={scienceTheme.colors.primary}
+                    />
+                  </View>
+                </View>
+              </ScienceCard>
+            </TouchableOpacity>
           ) : (
-            <Text style={styles.loadingText}>
-              İlerleme bilgisi yükleniyor...
-            </Text>
+            <ScienceCard style={styles.emptyCard}>
+              <Text style={styles.emptyEmoji}>🎉</Text>
+              <Text style={styles.emptyText}>Tüm deneyler tamamlandı!</Text>
+            </ScienceCard>
           )}
-        </ScienceCard>
 
-        {/* Tip Card */}
-        <ScienceCard variant="chemistry" style={styles.tipCard}>
-          <View style={styles.tipHeader}>
-            <Text style={styles.tipEmoji}>💡</Text>
-            <Text style={styles.tipTitle}>Bilim İpucu</Text>
+          {/* Stats */}
+          <View style={styles.statsRow}>
+            <InfoBox
+              title="Deney"
+              value={progress?.totalExperimentsCompleted || 0}
+              icon="🧪"
+              color={scienceTheme.colors.chemistry}
+            />
+            <InfoBox
+              title="Rozet"
+              value={progress?.badges?.length || 0}
+              icon="🏅"
+              color={scienceTheme.colors.accent}
+            />
+            <InfoBox
+              title="Seri"
+              value={progress?.streak || 0}
+              icon="🔥"
+              color={scienceTheme.colors.biology}
+            />
           </View>
-          <Text style={styles.tipText}>
-            Mikroskop kullanırken en düşük büyütmeden başla ve yavaşça artır. Bu
-            şekilde numuneni daha kolay bulursun!
-          </Text>
-        </ScienceCard>
 
-        {/* Start Button */}
-        <ScienceButton
-          title="Deneye Başla!"
-          onPress={navigateToExperiments}
-          variant="primary"
-          size="large"
-          icon={<FlaskConical size={22} color="#FFF" />}
-          style={styles.startButton}
-        />
-      </View>
-    </ScrollView>
+          {/* İlerleme Detayları Kartı */}
+          <ScienceCard style={styles.progressDetailsCard}>
+            <Text style={styles.progressDetailsTitle}>
+              📈 İlerleme Detayları
+            </Text>
+            {progress ? (
+              <View style={styles.progressDetailsBody}>
+                <View style={styles.progressRow}>
+                  <Text style={styles.progressLabel}>Toplam XP</Text>
+                  <Text style={styles.progressValue}>{totalXP} XP</Text>
+                </View>
+
+                <View style={styles.progressRow}>
+                  <Text style={styles.progressLabel}>Tamamlanan Deney</Text>
+                  <Text style={styles.progressValue}>
+                    {progress.totalExperimentsCompleted}
+                  </Text>
+                </View>
+
+                <View style={styles.progressRow}>
+                  <Text style={styles.progressLabel}>Seri (Gün)</Text>
+                  <Text style={styles.progressValue}>{progress.streak}</Text>
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.loadingText}>
+                İlerleme bilgisi yükleniyor...
+              </Text>
+            )}
+          </ScienceCard>
+
+          {/* Tip Card */}
+          <ScienceCard variant="chemistry" style={styles.tipCard}>
+            <View style={styles.tipHeader}>
+              <Text style={styles.tipEmoji}>💡</Text>
+              <Text style={styles.tipTitle}>Bilim İpucu</Text>
+            </View>
+            <Text style={styles.tipText}>
+              Mikroskop kullanırken en düşük büyütmeden başla ve yavaşça artır.
+              Bu şekilde numuneni daha kolay bulursun!
+            </Text>
+          </ScienceCard>
+
+          {/* Start Button */}
+          <ScienceButton
+            title="Deneye Başla!"
+            onPress={navigateToExperiments}
+            variant="primary"
+            size="large"
+            icon={<FlaskConical size={22} color="#FFF" />}
+            style={styles.startButton}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

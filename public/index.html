@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="theme-color" content="#14B8A6" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <title>cell-o</title>
+    <!-- Critical CSS inline örneği + platform optimizasyonları -->
+    <style>
+      html,
+      body,
+      #root {
+        min-height: 100dvh;
+        height: -webkit-fill-available;
+        background: #f0fdf4;
+        color: #1e293b;
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        -webkit-tap-highlight-color: transparent;
+      }
+      input,
+      textarea,
+      select {
+        font-size: 16px;
+      }
+      #root {
+        min-height: 100dvh;
+      }
+      .button {
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>Bu uygulama JavaScript gerektirir.</noscript>
+    <div id="root"></div>
+
+    <!-- WebP + fallback örneği -->
+    <picture>
+      <source srcset="/onboarding-lab.webp" type="image/webp" />
+      <img
+        src="/onboarding-lab.jpg"
+        alt="Onboarding Lab"
+        loading="lazy"
+        decoding="async"
+        width="320"
+        height="180"
+      />
+    </picture>
+
+    <script>
+      // Touch vs Click detection
+      window.isTouch = 'ontouchstart' in window;
+
+      // Swipe detection (horizontal) örneği
+      // Bir elemente swipe detection eklemek için:
+      // const element = document.getElementById('side-menu');
+      // let touchStartX = 0;
+      // element.addEventListener('touchstart', (e) => {
+      //   touchStartX = e.changedTouches[0].screenX;
+      // });
+      // element.addEventListener('touchend', (e) => {
+      //   const dx = e.changedTouches[0].screenX - touchStartX;
+      //   if (dx < -40) { /* sola swipe */ }
+      //   if (dx > 40) { /* sağa swipe */ }
+      // });
+
+      // Keyboard avoidance (mobilde input focus)
+      window.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach((input) => {
+          input.addEventListener('focus', () => {
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+          });
+        });
+      });
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
+  </body>
+</html>
