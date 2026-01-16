@@ -70,6 +70,8 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
       setUpcomingExperiments(upcoming);
       setAllExperiments(all);
       setProgress(prog);
+
+      // Removed verbose debugging logs
     } catch (err) {
       console.error('Veri yüklenirken hata:', err);
       setError('Veriler yüklenemedi. Lütfen tekrar dene.');

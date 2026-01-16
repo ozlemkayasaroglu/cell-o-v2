@@ -43,6 +43,48 @@ export default function HomeScreen() {
   const sparkleAnim = useRef(new Animated.Value(0)).current;
   const xpIntervalRef = useRef<number | null>(null);
 
+  // Age group labels map
+  const ageGroupLabels: Record<string, string> = {
+    '4-5': '4–5 yaş',
+    '6-7': '6–7 yaş',
+    '8-9': '8–9 yaş',
+    '10-12': '10–12 yaş',
+  };
+
+  // Age group default role titles (matches getDefaultNickname)
+  const ageDefaultTitles: Record<string, string> = {
+    '4-5': 'Küçük Bilim İnsanı',
+    '6-7': 'Meraklı Öğrenen',
+    '8-9': 'Deney Sever',
+    '10-12': 'Bilim Yolcusu',
+  };
+
+  // Avatar id -> emoji map (must match profile-setup avatars)
+  const avatarEmojiMap: Record<string, string> = {
+    unicorn: '🦄',
+    butterfly: '🦋',
+    ladybug: '🐞',
+    bunny: '🐰',
+    cat: '🐱',
+    dog: '🐶',
+    scientist: '🥼',
+  };
+
+  // Load saved profile on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const raw = await AsyncStorage.getItem('user_profile');
+        if (raw) {
+          setProfile(JSON.parse(raw));
+        }
+      } catch (e) {
+        console.warn('Profil yüklenemedi:', e);
+      }
+    };
+    loadProfile();
+  }, []);
+
   useEffect(() => {
     // progress değiştiğinde animasyonlu XP artışı uygula
     const newXP = progress?.totalPoints || 0;
