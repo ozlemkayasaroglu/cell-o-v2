@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,21 +6,21 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { scienceTheme } from '../theme/science';
+} from "react-native";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { scienceTheme } from "../theme/science";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const slides = [
   {
-    key: 'explore',
-    image: require('../assets/images/onboarding-lab.png'),
-    title: 'Keşfet & Deney Yap!',
+    key: "explore",
+    image: require("../assets/images/onboarding.png"),
+    title: "Keşfet & Deney Yap!",
     description:
-      'Küçük laboratuvarımıza katıl, merakın harika keşiflere yol açsın. Güvenli, eğlenceli ve ilham dolu bir deneyim seni bekliyor.',
-    icon: '🧪',
+      "Küçük laboratuvarımıza katıl, merakın harika keşiflere yol açsın. Güvenli, eğlenceli ve ilham dolu bir deneyim seni bekliyor.",
+    icon: "🧪",
   },
   // Diğer slaytlar eklenebilir
 ];
@@ -29,19 +29,31 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const clearStorageAndReload = async () => {
+    try {
+      await AsyncStorage.removeItem("onboarding_completed");
+      await AsyncStorage.removeItem("profile_completed");
+      await AsyncStorage.removeItem("profile_data");
+
+      window.location.reload();
+    } catch (error) {
+      console.error("❌ Temizleme hatası:", error);
+    }
+  };
+
   const handleNext = async () => {
     // Son slaytta ise onboarding tamamla
     if (currentIndex === slides.length - 1) {
-      await AsyncStorage.setItem('onboarding_completed', 'true');
-      router.replace('/profile-setup');
+      await AsyncStorage.setItem("onboarding_completed", "true");
+      router.replace("/profile-setup");
     } else {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
   const handleSkip = async () => {
-    await AsyncStorage.setItem('onboarding_completed', 'true');
-    router.replace('/profile-setup');
+    await AsyncStorage.setItem("onboarding_completed", "true");
+    router.replace("/profile-setup");
   };
 
   const renderDots = () => (
@@ -53,7 +65,7 @@ export default function OnboardingScreen() {
             styles.dot,
             {
               backgroundColor:
-                idx === currentIndex ? scienceTheme.colors.primary : '#E5E7EB',
+                idx === currentIndex ? scienceTheme.colors.primary : "#E5E7EB",
             },
           ]}
         />
@@ -65,6 +77,14 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Debug Butonu */}
+      <TouchableOpacity
+        style={styles.debugButton}
+        onPress={clearStorageAndReload}
+      >
+        <Text style={styles.debugButtonText}>🧹 Sıfırla</Text>
+      </TouchableOpacity>
+
       {/* Top Illustration */}
       <View style={styles.illustrationContainer}>
         <Image
@@ -75,7 +95,7 @@ export default function OnboardingScreen() {
         {/* Logo ekle: beyaz alanın ortasına */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/images/logo.png')}
+            source={require("../assets/images/logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -100,7 +120,7 @@ export default function OnboardingScreen() {
           activeOpacity={0.85}
         >
           <Text style={styles.startButtonText}>
-            {currentIndex === slides.length - 1 ? 'Keşfetmeye Başla' : 'İleri'}
+            {currentIndex === slides.length - 1 ? "Keşfetmeye Başla" : "İleri"}
           </Text>
           <Text style={styles.startButtonArrow}>→</Text>
         </TouchableOpacity>
@@ -112,61 +132,61 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FEFB',
+    backgroundColor: "#F8FEFB",
   },
   illustrationContainer: {
-    width: '100%',
+    width: "100%",
     height: width * 1.1,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
-    overflow: 'hidden',
-    backgroundColor: '#E0F7F1',
-    position: 'relative',
+    overflow: "hidden",
+    backgroundColor: "#E0F7F1",
+    position: "relative",
   },
   illustration: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   skipButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 32,
     right: 24,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 6,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
   skipText: {
-    color: '#222',
-    fontWeight: '600',
+    color: "#222",
+    fontWeight: "600",
     fontSize: 15,
     marginRight: 4,
   },
   skipArrow: {
-    color: '#222',
+    color: "#222",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 1,
   },
   content: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 24,
     paddingTop: 32,
   },
   iconBadge: {
-    backgroundColor: scienceTheme.colors.primary + '22',
+    backgroundColor: scienceTheme.colors.primary + "22",
     width: 48,
     height: 48,
     borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 18,
   },
   iconText: {
@@ -174,23 +194,23 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#222',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#222",
+    textAlign: "center",
     marginBottom: 12,
     marginTop: 2,
   },
   description: {
     fontSize: 16,
-    color: '#4B5563',
-    textAlign: 'center',
+    color: "#4B5563",
+    textAlign: "center",
     marginBottom: 28,
     lineHeight: 22,
   },
   dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 32,
     gap: 8,
   },
@@ -201,50 +221,64 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   startButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: scienceTheme.colors.primary,
     borderRadius: 32,
     paddingVertical: 18,
     paddingHorizontal: 32,
     marginTop: 8,
-    width: '100%',
-    justifyContent: 'center',
+    width: "100%",
+    justifyContent: "center",
     shadowColor: scienceTheme.colors.primary,
     shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 2,
   },
   startButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 18,
     marginRight: 8,
   },
   startButtonArrow: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 1,
   },
   logoContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -10,
     left: 0,
     right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 2,
   },
   logo: {
     width: 150,
     height: 150,
     borderRadius: 24,
-
     padding: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
+  },
+  debugButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    backgroundColor: "#FF6B6B",
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    zIndex: 10,
+  },
+  debugButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
   },
 });
