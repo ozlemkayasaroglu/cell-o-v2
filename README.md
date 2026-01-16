@@ -1,4 +1,4 @@
-# Nature Explorer - Çocuklar İçin Bilim Deneyleri
+# Cell-o - Çocuklar İçin Bilim Deneyleri
 
 Çocukların bilim dünyasını keşfetmesi için tasarlanmış interaktif deney platformu.
 
