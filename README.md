@@ -1,4 +1,4 @@
-# Cell-o - Çocuklar İçin Bilim Deneyleri
+# Cello - Çocuklar İçin Bilim Deneyleri
 
 Çocukların bilim dünyasını keşfetmesi için tasarlanmış interaktif deney platformu.
 
@@ -24,12 +24,12 @@
 ## 📦 Kurulum
 
 ```bash
-cd react-app
+cd cello
 npm install
 npm run dev
 ```
 
-Uygulama `http://localhost:5174` adresinde çalışacak.
+Uygulama `http://localhost:5173` adresinde çalışacak.
 
 ## 🎮 Kullanım
 
@@ -44,7 +44,7 @@ Uygulama `http://localhost:5174` adresinde çalışacak.
 ## 📁 Proje Yapısı
 
 ```
-react-app/
+cello/
 ├── src/
 │   ├── components/      # Reusable components
 │   ├── pages/          # Page components
