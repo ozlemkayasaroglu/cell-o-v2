@@ -1,15 +1,30 @@
+import { getLang, t } from "../i18n";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 import type { WeeklyExperiment } from "../types/experimentTypes";
 
 // Mikroskop büyütme ifadelerini temizle (20x, 40x, 100x vb.)
-function removeMagnification(text: string): string {
+function removeMagnification(text: string | undefined): string {
+  if (!text) return "";
   return text
     .replace(/\b\d{1,3}x\b/gi, "")
     .replace(/\s{2,}/g, " ")
     .replace(/\(\s*\)/g, "")
     .trim();
+}
+
+// Türkçe metin okuma (text-to-speech)
+function speakQuestion(question: string): void {
+  if ("speechSynthesis" in window) {
+    const utterance = new SpeechSynthesisUtterance(
+      removeMagnification(question)
+    );
+    utterance.lang = "tr-TR";
+    utterance.rate = 0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
 }
 
 export default function ExperimentDetail() {
@@ -20,9 +35,17 @@ export default function ExperimentDetail() {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSurvey, setShowSurvey] = useState(false);
   const [surveyAnswers, setSurveyAnswers] = useState<string[]>([]);
-  const [showResults, setShowResults] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [ageGroup, setAgeGroup] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Yaş grubu bilgisini al
+    const profileData = localStorage.getItem("user_profile");
+    if (profileData) {
+      const profile = JSON.parse(profileData);
+      setAgeGroup(profile.ageGroup || null);
+    }
+  }, []);
 
   useEffect(() => {
     const exp = allExperiments.find((e) => e.id === experimentId);
@@ -38,28 +61,22 @@ export default function ExperimentDetail() {
       <div className="min-h-screen bg-[#F0FDF9] flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔬</div>
-          <p className="text-base text-[#6B7280]">Deney bulunamadı...</p>
+          <p className="text-base text-[#6B7280]">{t("not_found")}</p>
           <button
             onClick={() => navigate("/experiments")}
             className="mt-4 text-[#0D9488] font-semibold"
           >
-            ← Geri Dön
+            {t("back")}
           </button>
         </div>
       </div>
     );
   }
 
-  const handleComplete = async () => {
-    // Cevapları kontrol et
-    const results = checkAnswers();
-    const correct = results.filter((r) => r.isCorrect).length;
-    setCorrectCount(correct);
-
+  const handleSubmitSurvey = async () => {
+    // Cevapları kaydet ve deneyi tamamla
     const result = await completeExperiment(experiment.id, {
-      notes: `Doğru: ${correct}/${
-        experiment.observationGuide.length
-      } | ${surveyAnswers.join(" | ")}`,
+      notes: `Gözlem cevapları: ${surveyAnswers.join(" | ")}`,
       rating: 5,
     });
 
@@ -69,108 +86,6 @@ export default function ExperimentDetail() {
         navigate("/experiments");
       }, 3000);
     }
-  };
-
-  const handleSubmitSurvey = () => {
-    // Sonuçları göster
-    setShowResults(true);
-  };
-
-  const checkAnswers = () => {
-    // expectedResults ile cevapları karşılaştır
-    return experiment.observationGuide.map((question, index) => {
-      const answer = surveyAnswers[index]?.toLowerCase() || "";
-      const lowerQ = question.toLowerCase();
-
-      // expectedResults'tan ilgili sonucu bul
-      const relatedResult = experiment.expectedResults.find((result) => {
-        const lowerR = result.toLowerCase();
-        // Soru ve sonuç arasında anahtar kelime eşleşmesi
-        if (lowerQ.includes("şekil")) {
-          return lowerR.includes("şekil");
-        }
-        if (lowerQ.includes("renk")) {
-          return lowerR.includes("renk");
-        }
-        if (lowerQ.includes("hücre duvar")) {
-          return lowerR.includes("duvar");
-        }
-        if (lowerQ.includes("çekirdek")) {
-          return lowerR.includes("çekirdek");
-        }
-        if (lowerQ.includes("boyut") || lowerQ.includes("kadar")) {
-          return lowerR.includes("büyük") || lowerR.includes("küçük");
-        }
-        if (lowerQ.includes("hareket")) {
-          return lowerR.includes("hareket");
-        }
-        return false;
-      });
-
-      if (!relatedResult) {
-        return { isCorrect: true, feedback: "Harika gözlem!" }; // Eşleşme yoksa doğru say
-      }
-
-      const lowerResult = relatedResult.toLowerCase();
-
-      // Cevap kontrolü
-      let isCorrect = false;
-      let feedback = "";
-
-      // Şekil kontrolü
-      if (lowerQ.includes("şekil")) {
-        if (
-          (lowerResult.includes("dikdörtgen") &&
-            answer.includes("dikdörtgen")) ||
-          (lowerResult.includes("yuvarlak") && answer.includes("yuvarlak")) ||
-          (lowerResult.includes("düzensiz") && answer.includes("düzensiz"))
-        ) {
-          isCorrect = true;
-          feedback = "Doğru! Şekli doğru gözlemledin.";
-        } else {
-          feedback = `Beklenen: ${relatedResult}`;
-        }
-      }
-      // Evet/Hayır kontrolü
-      else if (
-        lowerQ.includes("görebiliyor musun") ||
-        lowerQ.includes("var mı")
-      ) {
-        if (
-          (lowerResult.includes("göreceksin") ||
-            lowerResult.includes("olacak")) &&
-          answer.includes("evet")
-        ) {
-          isCorrect = true;
-          feedback = "Doğru! Onu görebildin.";
-        } else if (lowerResult.includes("yok") && answer.includes("hayır")) {
-          isCorrect = true;
-          feedback = "Doğru! Onu görememen normal.";
-        } else {
-          feedback = `Beklenen: ${relatedResult}`;
-        }
-      }
-      // Genel kontrol
-      else {
-        // Basit kelime eşleşmesi
-        const keywords = lowerResult.split(" ").filter((w) => w.length > 3);
-        const matchCount = keywords.filter((k) => answer.includes(k)).length;
-        if (matchCount > 0) {
-          isCorrect = true;
-          feedback = "Harika gözlem!";
-        } else {
-          feedback = `Beklenen: ${relatedResult}`;
-        }
-      }
-
-      return { isCorrect, feedback };
-    });
-  };
-
-  const handleSurveyAnswer = (index: number, answer: string) => {
-    const newAnswers = [...surveyAnswers];
-    newAnswers[index] = answer;
-    setSurveyAnswers(newAnswers);
   };
 
   const handleFinishSteps = () => {
@@ -192,277 +107,114 @@ export default function ExperimentDetail() {
 
   const currentStepData = experiment.steps[currentStep];
 
-  // Sonuçlar gösteriliyorsa
-  if (showResults) {
-    const results = checkAnswers();
-    const totalQuestions = experiment.observationGuide.length;
-    const percentage = Math.round((correctCount / totalQuestions) * 100);
-
-    return (
-      <div className="min-h-screen bg-[#F0FDF9] pb-24">
-        {/* Confetti */}
-        {showConfetti && (
-          <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/20">
-            <div className="bg-white rounded-3xl p-8 text-center animate-bounce">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-2xl font-bold text-[#1F2937]">Tebrikler!</h2>
-              <p className="text-[#6B7280] mt-2">Deney tamamlandı!</p>
-            </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="bg-[#10B981] pt-[60px] pb-6 px-5">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-4">
-              {percentage >= 80 ? "🌟" : percentage >= 60 ? "👍" : "💪"}
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
-              Sonuçların Hazır!
-            </h1>
-            <p className="text-lg text-white/90">
-              {correctCount} / {totalQuestions} Doğru ({percentage}%)
-            </p>
-          </div>
-        </div>
-
-        {/* Results Content */}
-        <div className="p-5 max-w-2xl mx-auto">
-          {/* Score Card */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm mb-5 text-center">
-            <div className="text-5xl mb-3">
-              {percentage >= 80 ? "🏆" : percentage >= 60 ? "⭐" : "📚"}
-            </div>
-            <h2 className="text-xl font-bold text-[#1F2937] mb-2">
-              {percentage >= 80
-                ? "Mükemmel Gözlem!"
-                : percentage >= 60
-                ? "Harika İş Çıkardın!"
-                : "İyi Bir Başlangıç!"}
-            </h2>
-            <p className="text-sm text-[#6B7280]">
-              {percentage >= 80
-                ? "Bilim insanı gibi gözlem yaptın!"
-                : percentage >= 60
-                ? "Gözlem becerilerini geliştiriyorsun!"
-                : "Pratik yaparak daha iyi olacaksın!"}
-            </p>
-          </div>
-
-          {/* Detailed Results */}
-          <div className="space-y-3 mb-6">
-            {experiment.observationGuide.map((question, index) => {
-              const result = results[index];
-              const answer = surveyAnswers[index] || "Cevap verilmedi";
-
-              return (
-                <div
-                  key={index}
-                  className={`rounded-3xl p-5 shadow-sm ${
-                    result.isCorrect ? "bg-[#D1FAE5]" : "bg-[#FEE2E2]"
-                  }`}
-                >
-                  <div className="flex items-start gap-3 mb-2">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xl ${
-                        result.isCorrect ? "bg-[#10B981]" : "bg-[#EF4444]"
-                      }`}
-                    >
-                      {result.isCorrect ? "✓" : "✗"}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-[#1F2937] mb-1">
-                        {removeMagnification(question)}
-                      </p>
-                      <p className="text-sm text-[#6B7280] mb-2">
-                        Senin cevabın: <strong>{answer}</strong>
-                      </p>
-                      <p
-                        className={`text-xs ${
-                          result.isCorrect ? "text-[#059669]" : "text-[#DC2626]"
-                        }`}
-                      >
-                        {result.feedback}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Complete Button */}
-          <button
-            onClick={handleComplete}
-            className="w-full bg-[#10B981] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#059669] transition"
-          >
-            <span>Deneyi Tamamla ve Kaydet</span>
-            <span>🎉</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // Anket gösteriliyorsa
   if (showSurvey) {
-    // Basit çoktan seçmeli seçenekler
-    const getOptionsForQuestion = (question: string): string[] => {
-      const lowerQ = question.toLowerCase();
-
-      // Şekil soruları
-      if (lowerQ.includes("şekil") || lowerQ.includes("nasıl görün")) {
-        return ["Yuvarlak", "Dikdörtgen", "Düzensiz", "Üçgen", "Diğer"];
-      }
-
-      // Renk soruları
-      if (lowerQ.includes("renk") || lowerQ.includes("ne renk")) {
-        return ["Yeşil", "Mavi", "Kırmızı", "Sarı", "Şeffaf", "Diğer"];
-      }
-
-      // Boyut soruları
-      if (
-        lowerQ.includes("boyut") ||
-        lowerQ.includes("ne kadar") ||
-        lowerQ.includes("büyük")
-      ) {
-        return ["Çok küçük", "Küçük", "Orta", "Büyük", "Çok büyük"];
-      }
-
-      // Hareket soruları
-      if (lowerQ.includes("hareket") || lowerQ.includes("nasıl hareket")) {
-        return ["Hızlı", "Yavaş", "Hareket etmiyor", "Titreşiyor", "Dönerek"];
-      }
-
-      // Evet/Hayır soruları
-      if (
-        lowerQ.includes("görebiliyor musun") ||
-        lowerQ.includes("var mı") ||
-        lowerQ.includes("bulabildin mi")
-      ) {
-        return [
-          "Evet, gördüm",
-          "Hayır, göremedim",
-          "Biraz gördüm",
-          "Emin değilim",
-        ];
-      }
-
-      // Sayı soruları
-      if (lowerQ.includes("kaç") || lowerQ.includes("sayı")) {
-        return [
-          "1-5 arası",
-          "5-10 arası",
-          "10-20 arası",
-          "20'den fazla",
-          "Sayamadım",
-        ];
-      }
-
-      // Genel sorular
-      return ["Çok iyi", "İyi", "Orta", "Zor", "Çok zor"];
-    };
-
     return (
       <div className="min-h-screen bg-[#F0FDF9] pb-24">
-        {/* Confetti */}
+        <div className="max-w-2xl mx-auto px-2 pt-4">
+          {/* LanguageSwitcher kaldırıldı */}
+        </div>
+        {/* Success Message */}
         {showConfetti && (
           <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/20">
             <div className="bg-white rounded-3xl p-8 text-center animate-bounce">
               <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-2xl font-bold text-[#1F2937]">Tebrikler!</h2>
-              <p className="text-[#6B7280] mt-2">Deney tamamlandı!</p>
+              <h2 className="text-2xl font-bold text-[#1F2937]">
+                {t("congrats")}
+              </h2>
+              <p className="text-[#6B7280] mt-2">{t("experiment_completed")}</p>
             </div>
           </div>
         )}
-
         {/* Header */}
         <div className="bg-[#0D9488] pt-[60px] pb-6 px-5">
           <div className="max-w-2xl mx-auto">
             <h1 className="text-xl font-bold text-white mb-2">
-              🔍 Gözlem Anketi
+              {t("survey_title")}
             </h1>
-            <p className="text-sm text-white/90">
-              Deneyinde neler gözlemledin? Sorularımızı cevaplayarak paylaş!
-            </p>
+            <p className="text-sm text-white/90">{t("survey_desc")}</p>
           </div>
         </div>
-
         {/* Survey Content */}
         <div className="p-5 max-w-2xl mx-auto">
           <div className="space-y-4 mb-6">
-            {experiment.observationGuide.map((question, index) => {
-              const options = getOptionsForQuestion(question);
-              const selectedAnswer = surveyAnswers[index];
-
-              return (
-                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm">
-                  <div className="mb-3">
-                    <span className="text-sm font-bold text-[#1F2937] flex items-center gap-2">
-                      <span className="w-6 h-6 bg-[#0D9488] text-white rounded-full flex items-center justify-center text-xs">
+            {/* 4-5, 6-7 yaş grupları için: Sorular madde madde gösterilir */}
+            {(ageGroup === "4-5" || ageGroup === "6-7") && (
+              <div className="bg-white rounded-3xl p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-[#0D9488] mb-4 flex items-center gap-2">
+                  <span>📋</span>
+                  <span>{t("survey_questions")}</span>
+                  <button
+                    onClick={() =>
+                      speakQuestion(experiment.observationGuide.join(". "))
+                    }
+                    className="ml-auto text-xl hover:scale-110 transition"
+                    title={t("read_all_questions")}
+                  >
+                    🔊
+                  </button>
+                </h2>
+                <ul className="space-y-3">
+                  {experiment.observationGuide.map((question, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="w-6 h-6 bg-[#14B8A6] text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
                         {index + 1}
                       </span>
-                      <span>{removeMagnification(question)}</span>
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {options.map((option) => (
+                      <span className="text-sm text-[#1F2937] leading-relaxed mt-1 flex-1">
+                        {removeMagnification(question)}
+                      </span>
                       <button
-                        key={option}
-                        onClick={() => handleSurveyAnswer(index, option)}
-                        className={`w-full text-left px-4 py-3 rounded-xl border-2 transition ${
-                          selectedAnswer === option
-                            ? "border-[#0D9488] bg-[#0D9488]/10 text-[#0D9488] font-semibold"
-                            : "border-gray-200 bg-white text-[#1F2937] hover:border-[#0D9488]/50"
-                        }`}
+                        onClick={() => speakQuestion(question)}
+                        className="flex-shrink-0 text-lg hover:scale-110 transition"
+                        title={t("read_question")}
                       >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              selectedAnswer === option
-                                ? "border-[#0D9488] bg-[#0D9488]"
-                                : "border-gray-300"
-                            }`}
-                          >
-                            {selectedAnswer === option && (
-                              <svg
-                                className="w-3 h-3 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={3}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                          <span className="text-sm">{option}</span>
-                        </div>
+                        🔊
                       </button>
-                    ))}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* 8-9, 10-12 yaş grupları veya profil yoksa: Input alanları */}
+            {(ageGroup === "8-9" ||
+              ageGroup === "10-12" ||
+              ageGroup === null) &&
+              experiment.observationGuide.map((question, index) => (
+                <div key={index} className="bg-white rounded-3xl p-5 shadow-sm">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex items-start gap-3 flex-1">
+                      <span className="w-8 h-8 bg-[#0D9488] text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm font-bold text-[#1F2937] leading-relaxed">
+                        {removeMagnification(question)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder={t("write_answer")}
+                      value={surveyAnswers[index] || ""}
+                      onChange={(e) => {
+                        const newAnswers = [...surveyAnswers];
+                        newAnswers[index] = e.target.value;
+                        setSurveyAnswers(newAnswers);
+                      }}
+                      className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#0D9488]"
+                    />
                   </div>
                 </div>
-              );
-            })}
+              ))}
           </div>
-
           {/* Complete Button */}
           <button
             onClick={handleSubmitSurvey}
             className="w-full bg-[#10B981] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#059669] transition"
           >
-            <span>Cevapları Kontrol Et</span>
+            <span>{t("complete_experiment")}</span>
             <span>✓</span>
           </button>
-
-          <p className="text-xs text-[#6B7280] text-center mt-3">
-            💡 Sorular opsiyoneldir, istersen boş bırakabilirsin
-          </p>
         </div>
       </div>
     );
@@ -470,17 +222,21 @@ export default function ExperimentDetail() {
 
   return (
     <div className="min-h-screen bg-[#F0FDF9] pb-24">
+      <div className="max-w-2xl mx-auto px-2 pt-4">
+        {/* LanguageSwitcher kaldırıldı */}
+      </div>
       {/* Confetti */}
       {showConfetti && (
         <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/20">
           <div className="bg-white rounded-3xl p-8 text-center animate-bounce">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-[#1F2937]">Tebrikler!</h2>
-            <p className="text-[#6B7280] mt-2">Deney tamamlandı!</p>
+            <h2 className="text-2xl font-bold text-[#1F2937]">
+              {t("congrats")}
+            </h2>
+            <p className="text-[#6B7280] mt-2">{t("experiment_completed")}</p>
           </div>
         </div>
       )}
-
       {/* Header */}
       <div className="bg-[#0D9488] pt-[60px] pb-6 px-5 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto">
@@ -489,14 +245,14 @@ export default function ExperimentDetail() {
             className="text-white mb-4 flex items-center gap-2"
           >
             <span>←</span>
-            <span>Geri</span>
+            <span>{t("back")}</span>
           </button>
           <h1 className="text-xl font-bold text-white mb-2">
             {(experiment as any).childFriendly?.title || experiment.title}
           </h1>
           <div className="flex items-center gap-2">
             <span className="text-sm text-white/90">
-              Adım {currentStep + 1} / {experiment.steps.length}
+              {t("step")} {currentStep + 1} / {experiment.steps.length}
             </span>
           </div>
           {/* Progress Bar */}
@@ -512,7 +268,6 @@ export default function ExperimentDetail() {
           </div>
         </div>
       </div>
-
       {/* Content */}
       <div className="p-5 max-w-2xl mx-auto">
         {/* Malzemeler (İlk adımda göster) */}
@@ -520,7 +275,20 @@ export default function ExperimentDetail() {
           <div className="bg-white rounded-3xl p-5 shadow-sm mb-5">
             <h2 className="text-lg font-bold text-[#1F2937] mb-4 flex items-center gap-2">
               <span>📦</span>
-              <span>Malzemeler</span>
+              <span>{t("materials")}</span>
+              {(ageGroup === "4-5" || ageGroup === "6-7") && (
+                <button
+                  onClick={() =>
+                    speakQuestion(
+                      experiment.materials.map((m) => m.name).join(", ")
+                    )
+                  }
+                  className="ml-auto text-xl hover:scale-110 transition"
+                  title={t("read_materials")}
+                >
+                  🔊
+                </button>
+              )}
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {experiment.materials.map((material, index) => (
@@ -534,7 +302,7 @@ export default function ExperimentDetail() {
                       {material.name}
                     </p>
                     {material.optional && (
-                      <p className="text-xs text-[#6B7280]">Opsiyonel</p>
+                      <p className="text-xs text-[#6B7280]">{t("optional")}</p>
                     )}
                   </div>
                 </div>
@@ -542,13 +310,23 @@ export default function ExperimentDetail() {
             </div>
           </div>
         )}
-
         {/* Güvenlik Notları (İlk adımda göster) */}
         {currentStep === 0 && experiment.safetyNotes && (
           <div className="bg-[#FEF2F2] rounded-3xl p-5 shadow-sm mb-5 border-2 border-[#FCA5A5]">
             <h2 className="text-lg font-bold text-[#DC2626] mb-3 flex items-center gap-2">
               <span>⚠️</span>
-              <span>Güvenlik Notları</span>
+              <span>{t("safety_notes")}</span>
+              {(ageGroup === "4-5" || ageGroup === "6-7") && (
+                <button
+                  onClick={() =>
+                    speakQuestion((experiment.safetyNotes || []).join(". "))
+                  }
+                  className="ml-auto text-xl hover:scale-110 transition"
+                  title={t("read_safety")}
+                >
+                  🔊
+                </button>
+              )}
             </h2>
             <ul className="space-y-2">
               {experiment.safetyNotes.map((note, index) => (
@@ -560,34 +338,49 @@ export default function ExperimentDetail() {
             </ul>
           </div>
         )}
-
         {/* Mevcut Adım */}
         <div className="bg-white rounded-3xl p-6 shadow-sm mb-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-[#0D9488] rounded-full flex items-center justify-center text-white font-bold text-xl">
               {currentStep + 1}
             </div>
-            <h2 className="text-lg font-bold text-[#1F2937]">Adım</h2>
+            <h2 className="text-lg font-bold text-[#1F2937]">{t("step")}</h2>
+            {(ageGroup === "4-5" || ageGroup === "6-7") && (
+              <button
+                onClick={() => speakQuestion(currentStepData.instruction)}
+                className="ml-auto text-xl hover:scale-110 transition"
+                title={t("read_step")}
+              >
+                🔊
+              </button>
+            )}
           </div>
-
           <p className="text-base text-[#1F2937] leading-relaxed mb-4">
             {removeMagnification(currentStepData.instruction)}
           </p>
-
           {currentStepData.tip && (
             <div className="bg-[#FEF3C7] rounded-xl p-4 flex gap-3">
               <span className="text-xl">💡</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-[#92400E] mb-1">
-                  İpucu
+                  {t("tip")}
                 </p>
                 <p className="text-sm text-[#78350F]">
                   {removeMagnification(currentStepData.tip)}
                 </p>
               </div>
+              {(ageGroup === "4-5" || ageGroup === "6-7") &&
+                currentStepData.tip && (
+                  <button
+                    onClick={() => speakQuestion(currentStepData.tip ?? "")}
+                    className="flex-shrink-0 text-lg hover:scale-110 transition"
+                    title={t("read_tip")}
+                  >
+                    🔊
+                  </button>
+                )}
             </div>
           )}
-
           {currentStepData.duration && (
             <div className="mt-4 flex items-center gap-2 text-sm text-[#6B7280]">
               <span>⏱️</span>
@@ -595,13 +388,23 @@ export default function ExperimentDetail() {
             </div>
           )}
         </div>
-
         {/* Beklenen Sonuçlar (Son adımda göster) */}
         {currentStep === experiment.steps.length - 1 && (
           <div className="bg-[#DBEAFE] rounded-3xl p-5 shadow-sm mb-5">
             <h2 className="text-lg font-bold text-[#1E40AF] mb-3 flex items-center gap-2">
               <span>🔍</span>
-              <span>Beklenen Sonuçlar</span>
+              <span>{t("expected_results")}</span>
+              {(ageGroup === "4-5" || ageGroup === "6-7") && (
+                <button
+                  onClick={() =>
+                    speakQuestion(experiment.expectedResults.join(". "))
+                  }
+                  className="ml-auto text-xl hover:scale-110 transition"
+                  title={t("read_results")}
+                >
+                  🔊
+                </button>
+              )}
             </h2>
             <ul className="space-y-2">
               {experiment.expectedResults.map((result, index) => (
@@ -613,7 +416,6 @@ export default function ExperimentDetail() {
             </ul>
           </div>
         )}
-
         {/* Navigation Buttons */}
         <div className="flex gap-3">
           {currentStep > 0 && (
@@ -622,16 +424,15 @@ export default function ExperimentDetail() {
               className="flex-1 bg-gray-200 text-[#1F2937] font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-gray-300 transition"
             >
               <span>←</span>
-              <span>Önceki</span>
+              <span>{t("previous")}</span>
             </button>
           )}
-
           {currentStep < experiment.steps.length - 1 ? (
             <button
               onClick={nextStep}
               className="flex-1 bg-[#0D9488] text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#0D9488]/90 transition"
             >
-              <span>Sonraki</span>
+              <span>{t("next")}</span>
               <span>→</span>
             </button>
           ) : (
@@ -639,7 +440,7 @@ export default function ExperimentDetail() {
               onClick={handleFinishSteps}
               className="flex-1 bg-[#10B981] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#059669] transition"
             >
-              <span>Gözlem Anketine Geç</span>
+              <span>{t("go_to_survey")}</span>
               <span>📝</span>
             </button>
           )}
