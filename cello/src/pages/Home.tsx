@@ -483,7 +483,7 @@ export default function Home() {
             </span>
           </div>
           <div className="mt-4 pt-4 border-t border-[#D8B4FE]">
-            <div className="max-w-full bg-white/50 rounded-xl p-3 mx-auto max-w-md">
+            <div className="max-w-full bg-white/50 rounded-xl p-3 mx-auto ">
               <p className="text-md text-[#4B5563] mt-1 italic">
                 "{scientistOfTheDay.quote}"
                 {isYoung && <Speaker text={scientistOfTheDay.quote} />}

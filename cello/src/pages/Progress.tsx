@@ -3,7 +3,7 @@ import { Transition } from "@headlessui/react"; // Animasyon için
 import { categoryIcons } from "../types/experimentTypes";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 
-export default function Progress({ childAge = 6 }) {
+export default function Progress() {
   const { allExperiments, progress, loading } = useWeeklyExperiment();
 
   const [recentBadge, setRecentBadge] = useState<{
@@ -21,9 +21,9 @@ export default function Progress({ childAge = 6 }) {
 
   // Microcopy yaşa göre
   const ageCopy =
-    childAge <= 6
+    progress.ageGroup === "4-5" || progress.ageGroup === "6-7"
       ? "Harika gidiyorsun! Her deney senin için eğlenceli bir keşif."
-      : childAge <= 9
+      : progress.ageGroup === "8-9"
       ? "Bilim yolculuğun hızla ilerliyor! Yeni deneyler seni bekliyor."
       : "Bilim becerilerin çok gelişti! Daha zorlu deneylere hazır ol.";
 
@@ -147,7 +147,7 @@ export default function Progress({ childAge = 6 }) {
       window.speechSynthesis.speak(utter);
     }
   };
-  const isYoung = childAge <= 7;
+  const isYoung = progress.ageGroup === "4-5" || progress.ageGroup === "6-7";
 
   // Hoparlör ikonlu buton (tekrar kullanılabilir)
   const Speaker = ({ text }: { text: string }) => (

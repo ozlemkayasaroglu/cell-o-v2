@@ -1,10 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function Experiments({ childAge = 6 }) {
+export default function Experiments() {
   const navigate = useNavigate();
   const { allExperiments, progress, loading } = useWeeklyExperiment();
+
+  // Yaş bilgisini localStorage'dan oku
+  const [ageGroup, setAgeGroup] = useState<string | null>(null);
+  useEffect(() => {
+    const profile = localStorage.getItem("user_profile");
+    if (profile) {
+      const parsed = JSON.parse(profile);
+      setAgeGroup(parsed.ageGroup || null);
+    }
+  }, []);
+  const isYoung = ageGroup === "4-5" || ageGroup === "6-7";
 
   if (loading) {
     return (
@@ -31,7 +42,6 @@ export default function Experiments({ childAge = 6 }) {
       window.speechSynthesis.speak(utter);
     }
   };
-  const isYoung = childAge <= 7;
   // Hoparlör ikonlu buton
   const Speaker = ({ text }: { text: string }) => (
     <button
