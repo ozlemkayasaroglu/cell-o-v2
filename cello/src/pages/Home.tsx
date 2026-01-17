@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { currentExperiment, progress, loading } = useWeeklyExperiment();
+  const { currentExperiment, progress, loading, allExperiments } = useWeeklyExperiment();
 
   const [profile, setProfile] = useState<{
     avatar: string;
@@ -12,10 +12,19 @@ export default function Home() {
     ageGroup: string;
   } | null>(null);
 
+  const [randomExperimentIndex, setRandomExperimentIndex] = useState(0);
+
   useEffect(() => {
     const data = localStorage.getItem("user_profile");
     if (data) setProfile(JSON.parse(data));
   }, []);
+
+  useEffect(() => {
+    if (allExperiments.length > 0) {
+      const randomIndex = Math.floor(Math.random() * allExperiments.length);
+      setRandomExperimentIndex(randomIndex);
+    }
+  }, [allExperiments]);
 
   const avatarEmojiMap: Record<string, string> = {
     unicorn: "🦄",
@@ -59,32 +68,28 @@ export default function Home() {
     );
   }
 
-  // Sesli okuma fonksiyonu ve Speaker bileşeni
-  const speak = (text: string) => {
-    if (window.speechSynthesis) {
-      const utter = new window.SpeechSynthesisUtterance(text);
-      utter.lang = "tr-TR";
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
-    }
-  };
   const isYoung =
     profile && (profile.ageGroup === "4-5" || profile.ageGroup === "6-7");
   const Speaker = ({ text }: { text: string }) => (
-    <button
-      type="button"
+    <span
+      role="button"
       aria-label="Sesli oku"
-      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none cursor-pointer"
+      tabIndex={0}
       onClick={(e) => {
         e.stopPropagation();
-        speak(text);
+        if (window.speechSynthesis) {
+          const utter = new window.SpeechSynthesisUtterance(text);
+          utter.lang = "tr-TR";
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utter);
+        }
       }}
-      tabIndex={0}
     >
       <span role="img" aria-label="Sesli oku">
         🔊
       </span>
-    </button>
+    </span>
   );
 
   // Bilim insanları verisi
@@ -238,13 +243,10 @@ export default function Home() {
       info: "Hay bin Yakzan adlı felsefi romanın yazarı, insan aklının ve gözlemin gücünü anlattı",
     },
   ];
-  const weekNumber = Math.max(0, (progress?.currentWeek || 1) - 1);
-  const scientistOfTheWeek = scientists[weekNumber % scientists.length];
 
   // Rastgele bilim insanı (her ana sayfa açılışında değişir)
-  const scientistOfTheDay = useMemo(() => {
-    return scientists[Math.floor(Math.random() * scientists.length)];
-  }, []);
+  const scientistOfTheDay =
+    scientists[Math.floor(Math.random() * scientists.length)];
 
   // Başarılar tipi
   type Achievement = {
@@ -304,208 +306,278 @@ export default function Home() {
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   return (
-    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10">
-      <div className="max-w-5xl mx-auto flex flex-col gap-8">
-        {/* HERO */}
-        <div className="bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 shadow-md flex flex-col md:flex-row items-center gap-6">
-          <div className="text-[72px] animate-float">
-            {profile ? avatarEmojiMap[profile.avatar] : "🔬"}
-          </div>
-
-          <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] mb-2">
-              Merhaba{" "}
-              {renderColorfulNickname(profile?.nickname || "Bilim Kaşifi")}{" "}
-              {isYoung && (
-                <Speaker text={profile?.nickname || "Bilim Kaşifi"} />
-              )}{" "}
-              👋
-            </h1>
-            <p className="text-[#475569] mb-4">
-              Bugün keşfetmeye hazır mısın?
-              {isYoung && <Speaker text="Bugün keşfetmeye hazır mısın?" />}
-            </p>
-          </div>
-        </div>
-
-        {/* CURRENT EXPERIMENT */}
-        <div>
-          {loading ? (
-            <div className="bg-white rounded-3xl p-10 text-center shadow-md">
-              <div className="text-5xl mb-3 animate-pulse">🧪</div>
-              <p className="text-sm text-[#6B7280]">Hazırlanıyor...</p>
+    <main className="min-h-screen bg-[#F8FEFB] flex flex-col">
+      <section className="flex-1 flex flex-col items-center justify-center mt-10">
+        <div className="max-w-5xl mx-auto flex flex-col gap-8">
+          {/* HERO */}
+          <div className="bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 shadow-md flex flex-col md:flex-row items-center gap-6">
+            <div className="text-[72px] animate-float">
+              {profile ? avatarEmojiMap[profile.avatar] : "🔬"}
             </div>
-          ) : currentExperiment ? (
-            <div className="bg-white rounded-3xl p-6 shadow-xl">
-              <div className="flex justify-between items-center mb-3">
-                <span className="bg-[#14B8A6] text-white text-xs font-bold px-3 py-1 rounded-full">
-                  Hafta {currentExperiment.weekNumber}
-                </span>
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D1FAE5] text-[#059669]">
-                  {currentExperiment.difficulty}
-                </span>
-              </div>
 
-              <h3 className="text-xl font-extrabold text-[#0F172A] mb-2">
-                {(currentExperiment as any).childFriendly?.title ||
-                  currentExperiment.title}
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] mb-2">
+                Merhaba{" "}
+                {renderColorfulNickname(profile?.nickname || "Bilim Kaşifi")}{" "}
                 {isYoung && (
-                  <Speaker
-                    text={
-                      (currentExperiment as any).childFriendly?.title ||
-                      currentExperiment.title ||
-                      ""
-                    }
-                  />
-                )}
-              </h3>
-              <p className="text-sm text-[#475569] mb-4">
-                {(currentExperiment as any).childFriendly?.description ||
-                  currentExperiment.description}
-                {isYoung && (
-                  <Speaker
-                    text={
-                      (currentExperiment as any).childFriendly?.description ||
-                      currentExperiment.description ||
-                      ""
-                    }
-                  />
-                )}
+                  <Speaker text={profile?.nickname || "Bilim Kaşifi"} />
+                )}{" "}
+                👋
+              </h1>
+              <p className="text-[#475569] mb-4">
+                Bugün keşfetmeye hazır mısın?
+                {isYoung && <Speaker text="Bugün keşfetmeye hazır mısın?" />}
               </p>
+            </div>
+          </div>
 
-              <div className="flex justify-between items-center mb-5">
-                <div className="flex gap-4 text-sm text-[#64748B]">
-                  <span>
-                    ⏱️ {currentExperiment.estimatedTime}{" "}
-                    {isYoung && (
-                      <Speaker text={currentExperiment.estimatedTime || ""} />
-                    )}
+          {/* CURRENT EXPERIMENT */}
+          <div>
+            {loading ? (
+              <div className="bg-white rounded-3xl p-10 text-center shadow-md">
+                <div className="text-5xl mb-3 animate-pulse">🧪</div>
+                <p className="text-sm text-[#6B7280]">Hazırlanıyor...</p>
+              </div>
+            ) : currentExperiment ? (
+              <div className="bg-white rounded-3xl p-6 shadow-xl">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="bg-[#14B8A6] text-white text-xs font-bold px-3 py-1 rounded-full">
+                    Hafta {currentExperiment.weekNumber}
                   </span>
-                  <span>
-                    ⭐ +{currentExperiment.points} XP{" "}
-                    {isYoung && (
-                      <Speaker text={`Artı ${currentExperiment.points} XP`} />
-                    )}
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D1FAE5] text-[#059669]">
+                    {currentExperiment.difficulty}
                   </span>
                 </div>
-              </div>
 
-              <button
-                onClick={() => navigate(`/experiment/${currentExperiment.id}`)}
-                className="w-full py-4 rounded-full bg-[length:300%_300%]
+                <h3 className="text-xl font-extrabold text-[#0F172A] mb-2">
+                  {(currentExperiment as any).childFriendly?.title ||
+                    currentExperiment.title}
+                  {isYoung && (
+                    <Speaker
+                      text={
+                        (currentExperiment as any).childFriendly?.title ||
+                        currentExperiment.title ||
+                        ""
+                      }
+                    />
+                  )}
+                </h3>
+                <p className="text-sm text-[#475569] mb-4">
+                  {(currentExperiment as any).childFriendly?.description ||
+                    currentExperiment.description}
+                  {isYoung && (
+                    <Speaker
+                      text={
+                        (currentExperiment as any).childFriendly?.description ||
+                        currentExperiment.description ||
+                        ""
+                      }
+                    />
+                  )}
+                </p>
+
+                <div className="flex justify-between items-center mb-5">
+                  <div className="flex gap-4 text-sm text-[#64748B]">
+                    <span>
+                      ⏱️ {currentExperiment.estimatedTime}{" "}
+                      {isYoung && (
+                        <Speaker text={currentExperiment.estimatedTime || ""} />
+                      )}
+                    </span>
+                    <span>
+                      ⭐ +{currentExperiment.points} XP{" "}
+                      {isYoung && (
+                        <Speaker text={`Artı ${currentExperiment.points} XP`} />
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() =>
+                    navigate(`/experiment/${currentExperiment.id}`)
+                  }
+                  className="w-full py-4 rounded-full bg-[length:300%_300%]
     bg-gradient-to-r
     from-[#F59E42]
     via-[#14B8A6]
     via-[#F472B6]
     to-[#3B82F6]
     animate-gradient text-white font-black text-lg transition"
-              >
-                Deneye Başla 🚀
-                {isYoung && <Speaker text="Deneye Başla" />}
-              </button>
-            </div>
-          ) : (
-            <div className="bg-white rounded-3xl p-10 text-center shadow-sm">
-              <div className="text-6xl mb-3">🎉</div>
-              <p className="text-base text-[#6B7280]">
-                Tüm deneyleri tamamladın!
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Achievements */}
-        <div className="bg-white rounded-[32px] p-6 shadow-md mb-6">
-          <h3 className="text-lg font-bold text-[#1F2937] mb-4">
-            🏆 Başarılar ({unlockedCount}/{achievements.length})
-          </h3>
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {achievements.slice(0, 6).map((a) => (
-              <div
-                key={a.id}
-                className={`text-center p-3 rounded-2xl transition-all duration-300 ${
-                  a.unlocked
-                    ? "bg-gradient-to-br from-yellow-50 to-orange-50 hover:scale-105 cursor-pointer"
-                    : "bg-gray-50"
-                }`}
-              >
-                <div
-                  className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
-                    a.unlocked
-                      ? "bg-gradient-to-br from-yellow-100 to-orange-100 shadow-md"
-                      : "bg-gray-100 grayscale opacity-50"
-                  }`}
                 >
-                  <span
-                    className={`text-3xl ${a.unlocked ? "animate-bounce" : ""}`}
-                  >
-                    {a.icon}
+                  Deneye Başla 🚀
+                  {isYoung && <Speaker text="Deneye Başla" />}
+                </button>
+              </div>
+            ) : allExperiments.length > 0 ? (
+              <div className="bg-white rounded-3xl p-6 shadow-xl">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="bg-[#14B8A6] text-white text-xs font-bold px-3 py-1 rounded-full">
+                    Rastgele Deney
+                  </span>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D1FAE5] text-[#059669]">
+                    {allExperiments[randomExperimentIndex]?.difficulty || "Kolay"}
                   </span>
                 </div>
-                <p
-                  className={`text-xs font-semibold mb-1 ${
-                    a.unlocked ? "text-[#1F2937]" : "text-gray-400"
-                  }`}
-                >
-                  {a.name}
+
+                <h3 className="text-xl font-extrabold text-[#0F172A] mb-2">
+                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly?.title ||
+                    allExperiments[randomExperimentIndex]?.title}
+                  {isYoung && (
+                    <Speaker
+                      text={
+                        (allExperiments[randomExperimentIndex] as any)?.childFriendly?.title ||
+                        allExperiments[randomExperimentIndex]?.title ||
+                        ""
+                      }
+                    />
+                  )}
+                </h3>
+                <p className="text-sm text-[#475569] mb-4">
+                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly?.description ||
+                    allExperiments[randomExperimentIndex]?.description}
+                  {isYoung && (
+                    <Speaker
+                      text={
+                        (allExperiments[randomExperimentIndex] as any)?.childFriendly?.description ||
+                        allExperiments[randomExperimentIndex]?.description ||
+                        ""
+                      }
+                    />
+                  )}
                 </p>
-                <p
-                  className={`text-[10px] ${
-                    a.unlocked ? "text-[#6B7280]" : "text-gray-300"
-                  }`}
-                >
-                  {a.desc}
-                </p>
-                {a.unlocked && (
-                  <div className="mt-2">
-                    <span className="inline-block bg-green-100 text-green-700 text-[9px] px-2 py-1 rounded-full font-semibold">
-                      ✓ Kazanıldı
+
+                <div className="flex justify-between items-center mb-5">
+                  <div className="flex gap-4 text-sm text-[#64748B]">
+                    <span>
+                      ⏱️ {allExperiments[randomExperimentIndex]?.estimatedTime || "15 dk"}{" "}
+                      {isYoung && (
+                        <Speaker text={allExperiments[randomExperimentIndex]?.estimatedTime || "15 dk"} />
+                      )}
+                    </span>
+                    <span>
+                      ⭐ +{allExperiments[randomExperimentIndex]?.points || 10} XP{" "}
+                      {isYoung && (
+                        <Speaker text={`Artı ${allExperiments[randomExperimentIndex]?.points || 10} XP`} />
+                      )}
                     </span>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+                </div>
 
-        {/* DİĞER MERAKLI ÇOCUKLAR */}
-        <div className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D5FF] rounded-3xl p-6 text-center mb-14 shadow-md">
-          <div className="flex justify-center items-center flex-col">
-            <h3 className="text-lg font-bold mb-1 ">
-              Diğer Meraklı Çocuklar Büyüdü ve Neler Yaptı?
-              {isYoung && (
-                <Speaker text="Diğer Meraklı Çocuklar Büyüdü ve Neler Yaptı?" />
-              )}
-            </h3>
-            <span className="font-bold text-[#7C3AED] text-lg">
-              {scientistOfTheDay.name}
-              {isYoung && <Speaker text={scientistOfTheDay.name} />}
-            </span>
+                <button
+                  onClick={() =>
+                    navigate(`/experiment/${allExperiments[randomExperimentIndex]?.id}`)
+                  }
+                  className="w-full py-4 rounded-full bg-[length:300%_300%]
+    bg-gradient-to-r
+    from-[#F59E42]
+    via-[#14B8A6]
+    via-[#F472B6]
+    to-[#3B82F6]
+    animate-gradient text-white font-black text-lg transition"
+                >
+                  Deneye Göz At 👀
+                  {isYoung && <Speaker text="Deneye Göz At" />}
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white rounded-3xl p-10 text-center shadow-sm">
+                <div className="text-6xl mb-3">🎉</div>
+                <p className="text-base text-[#6B7280]">
+                  Tüm deneyleri tamamladın!
+                </p>
+              </div>
+            )}
           </div>
-          <div className="mt-4 pt-4 border-t border-[#D8B4FE]">
-            <div className="max-w-full bg-white/50 rounded-xl p-3 mx-auto ">
-              <p className="text-md text-[#4B5563] mt-1 italic">
-                "{scientistOfTheDay.quote}"
-                {isYoung && <Speaker text={scientistOfTheDay.quote} />}
-              </p>
-              <div className="text-sm text-[#6B7280] mt-1">
-                {scientistOfTheDay.info}
-                {isYoung && <Speaker text={scientistOfTheDay.info} />}
+
+          {/* Achievements */}
+          <div className="bg-white rounded-[32px] p-6 shadow-md mb-6">
+            <h3 className="text-lg font-bold text-[#1F2937] mb-4">
+              🏆 Başarılar ({unlockedCount}/{achievements.length})
+            </h3>
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {achievements.slice(0, 6).map((a) => (
+                <div
+                  key={a.id}
+                  className={`text-center p-3 rounded-2xl transition-all duration-300 ${
+                    a.unlocked
+                      ? "bg-gradient-to-br from-yellow-50 to-orange-50 hover:scale-105 cursor-pointer"
+                      : "bg-gray-50"
+                  }`}
+                >
+                  <div
+                    className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
+                      a.unlocked
+                        ? "bg-gradient-to-br from-yellow-100 to-orange-100 shadow-md"
+                        : "bg-gray-100 grayscale opacity-50"
+                    }`}
+                  >
+                    <span
+                      className={`text-3xl ${
+                        a.unlocked ? "animate-bounce" : ""
+                      }`}
+                    >
+                      {a.icon}
+                    </span>
+                  </div>
+                  <p
+                    className={`text-xs font-semibold mb-1 ${
+                      a.unlocked ? "text-[#1F2937]" : "text-gray-400"
+                    }`}
+                  >
+                    {a.name}
+                  </p>
+                  <p
+                    className={`text-[10px] ${
+                      a.unlocked ? "text-[#6B7280]" : "text-gray-300"
+                    }`}
+                  >
+                    {a.desc}
+                  </p>
+                  {a.unlocked && (
+                    <div className="mt-2">
+                      <span className="inline-block bg-green-100 text-green-700 text-[9px] px-2 py-1 rounded-full font-semibold">
+                        ✓ Kazanıldı
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* DİĞER MERAKLI ÇOCUKLAR */}
+          <div className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D5FF] rounded-3xl p-6 text-center mb-14 shadow-md">
+            <div className="flex justify-center items-center flex-col">
+              <h3 className="text-lg font-bold mb-1 ">
+                Diğer Meraklı Çocuklar Büyüdü ve Neler Yaptı?
+                {isYoung && (
+                  <Speaker text="Diğer Meraklı Çocuklar Büyüdü ve Neler Yaptı?" />
+                )}
+              </h3>
+              <span className="font-bold text-[#7C3AED] text-lg">
+                {scientistOfTheDay.name}
+                {isYoung && <Speaker text={scientistOfTheDay.name} />}
+              </span>
+            </div>
+            <div className="mt-4 pt-4 border-t border-[#D8B4FE]">
+              <div className="max-w-full bg-white/50 rounded-xl p-3 mx-auto ">
+                <p className="text-md text-[#4B5563] mt-1 italic">
+                  "{scientistOfTheDay.quote}"
+                  {isYoung && <Speaker text={scientistOfTheDay.quote} />}
+                </p>
+                <div className="text-sm text-[#6B7280] mt-1">
+                  {scientistOfTheDay.info}
+                  {isYoung && <Speaker text={scientistOfTheDay.info} />}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
-    </div>
+      </section>
+      <footer className="w-full py-4 bg-[#E0F7F1] text-center text-xs text-[#64748B]">
+        © {new Date().getFullYear()} Cell-o. Tüm hakları saklıdır.
+      </footer>
+    </main>
   );
 }

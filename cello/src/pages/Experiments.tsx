@@ -2,13 +2,38 @@ import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 import { useState, useEffect } from "react";
 
+// Speaker bileşeni fonksiyon dışında tanımlı, hook kullanılmıyor, tamamen saf fonksiyon
+function Speaker({ text }: { text: string }) {
+  return (
+    <span
+      role="button"
+      aria-label="Sesli oku"
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none cursor-pointer"
+      tabIndex={0}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (window.speechSynthesis) {
+          const utter = new window.SpeechSynthesisUtterance(text);
+          utter.lang = "tr-TR";
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utter);
+        }
+      }}
+    >
+      <span role="img" aria-label="Sesli oku">
+        🔊
+      </span>
+    </span>
+  );
+}
+
 export default function Experiments() {
+  // Tüm hook'lar koşulsuz ve en başta
   const navigate = useNavigate();
   const { allExperiments, progress, loading } = useWeeklyExperiment();
-
-  // Yaş bilgisini localStorage'dan oku
   const [ageGroup, setAgeGroup] = useState<string | null>(null);
   useEffect(() => {
+    document.title = "Cell-o | Bilimsel Deneyler";
     const profile = localStorage.getItem("user_profile");
     if (profile) {
       const parsed = JSON.parse(profile);
@@ -33,38 +58,11 @@ export default function Experiments() {
       ? 0
       : (progress.totalExperimentsCompleted / allExperiments.length) * 100;
 
-  // Sesli okuma fonksiyonu
-  const speak = (text: string) => {
-    if (window.speechSynthesis) {
-      const utter = new window.SpeechSynthesisUtterance(text);
-      utter.lang = "tr-TR";
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
-    }
-  };
-  // Hoparlör ikonlu buton
-  const Speaker = ({ text }: { text: string }) => (
-    <button
-      type="button"
-      aria-label="Sesli oku"
-      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
-      onClick={(e) => {
-        e.stopPropagation();
-        speak(text);
-      }}
-      tabIndex={0}
-    >
-      <span role="img" aria-label="Sesli oku">
-        🔊
-      </span>
-    </button>
-  );
-
   return (
-    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10">
+    <main className="min-h-screen bg-[#F8FEFB] px-4 py-10">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT – Onboarding Hero */}
-        <div className="lg:col-span-1 bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 flex flex-col justify-between shadow-sm">
+        <section className="lg:col-span-1 bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 flex flex-col justify-between shadow-sm">
           <div>
             <h1 className="text-[28px] font-extrabold text-[#0F172A] mb-3">
               {isYoung && <Speaker text="Deneyler" />}
@@ -103,16 +101,10 @@ to-[#3B82F6] h-3 rounded-full transition-all"
               </p>
             </div>
           </div>
-
-          <img
-            src="/experiments-illustration.png"
-            alt=""
-            className="mt-8 w-full max-w-xs mx-auto hidden lg:block"
-          />
-        </div>
+        </section>
 
         {/* RIGHT – Step / Experiment Cards */}
-        <div className="lg:col-span-2 flex flex-col gap-5 mb-12">
+        <section className="lg:col-span-2 flex flex-col gap-5 mb-12">
           {allExperiments.length > 0 ? (
             allExperiments.map((exp, index) => {
               const isCompleted = exp.status === "completed";
@@ -203,9 +195,15 @@ to-[#3B82F6] h-3 rounded-full transition-all"
                     }`}
                   >
                     {isLocked ? (
-                      <>Kilitli{isYoung && <Speaker text="Kilitli" />}</>
+                      <>
+                        Kilitli
+                        {isYoung && <Speaker text="Kilitli" />}
+                      </>
                     ) : isCompleted ? (
-                      <>Tekrar Yap{isYoung && <Speaker text="Tekrar Yap" />}</>
+                      <>
+                        Tekrar Yap
+                        {isYoung && <Speaker text="Tekrar Yap" />}
+                      </>
                     ) : (
                       <>
                         Deneye Başla 🚀
@@ -222,8 +220,8 @@ to-[#3B82F6] h-3 rounded-full transition-all"
               <p className="text-base text-[#6B7280]">Henüz deney bulunmuyor</p>
             </div>
           )}
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

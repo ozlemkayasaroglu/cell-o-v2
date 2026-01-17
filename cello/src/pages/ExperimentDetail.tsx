@@ -94,20 +94,20 @@ export default function ExperimentDetail() {
 
   // Speaker bileşeni
   const Speaker = ({ text }: { text: string }) => (
-    <button
-      type="button"
+    <span
+      role="button"
       aria-label="Sesli oku"
-      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none cursor-pointer"
+      tabIndex={0}
       onClick={(e) => {
         e.stopPropagation();
         speak(text);
       }}
-      tabIndex={0}
     >
       <span role="img" aria-label="Sesli oku">
         🔊
       </span>
-    </button>
+    </span>
   );
 
   /* ---------- Survey ---------- */

@@ -125,35 +125,25 @@ class ExperimentEngine {
     return null; // Tüm deneyler tamamlandı
   }
 
-  // Tüm deneyleri getir
+  // Tüm deneyleri getir (yaş/difficulty filtresi olmadan, 52 deney)
   async getAllExperiments(): Promise<WeeklyExperiment[]> {
     const progress = await this.getProgress();
-    const completedCount = progress.totalExperimentsCompleted;
+    const completedData = await storage.getItem(STORAGE_KEYS.COMPLETED_EXPERIMENTS);
+    const completed: string[] = completedData ? JSON.parse(completedData) : [];
 
-    // Kullanıcı profilinden yaş grubunu al
-    const profileData = await storage.getItem("user_profile");
-    const profile = profileData ? JSON.parse(profileData) : null;
-    const ageGroup = profile?.ageGroup || null;
-
-    // Yaş grubuna uygun deneyleri filtrele
-    const suitableExperiments = weeklyExperiments.filter((exp) =>
-      isExperimentSuitableForAge(exp, ageGroup)
-    );
-
-    const allExperiments = suitableExperiments.map((exp, index) => {
+    // 52 haftalık tüm deneyleri sırayla döndür
+    const allExperiments = weeklyExperiments.map((exp, index) => {
       const status: "completed" | "available" | "locked" =
-        index < completedCount
+        completed.includes(exp.id)
           ? "completed"
-          : index === completedCount
+          : completed.length === index
           ? "available"
           : "locked";
-
       return {
         ...exp,
         status,
       };
     });
-
     return allExperiments as WeeklyExperiment[];
   }
 
