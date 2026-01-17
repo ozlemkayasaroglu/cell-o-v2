@@ -11,6 +11,16 @@ export default function Progress() {
     name: string;
   } | null>(null);
 
+  const [ageGroup, setAgeGroup] = useState<string | null>(null);
+
+  useEffect(() => {
+    const profile = localStorage.getItem("user_profile");
+    if (profile) {
+      const parsed = JSON.parse(profile);
+      setAgeGroup(parsed.ageGroup || null);
+    }
+  }, []);
+
   const level = Math.floor(progress.totalPoints / 100) + 1;
   const currentLevelXP = progress.totalPoints % 100;
 
@@ -21,11 +31,11 @@ export default function Progress() {
 
   // Microcopy yaşa göre
   const ageCopy =
-    progress.ageGroup === "4-5" || progress.ageGroup === "6-7"
+    ageGroup === "4-5" || ageGroup === "6-7"
       ? "Harika gidiyorsun! Her deney senin için eğlenceli bir keşif."
-      : progress.ageGroup === "8-9"
-      ? "Bilim yolculuğun hızla ilerliyor! Yeni deneyler seni bekliyor."
-      : "Bilim becerilerin çok gelişti! Daha zorlu deneylere hazır ol.";
+      : ageGroup === "8-9"
+        ? "Bilim yolculuğun hızla ilerliyor! Yeni deneyler seni bekliyor."
+        : "Bilim becerilerin çok gelişti! Daha zorlu deneylere hazır ol.";
 
   // Achievements
   const achievements = [
@@ -147,7 +157,7 @@ export default function Progress() {
       window.speechSynthesis.speak(utter);
     }
   };
-  const isYoung = progress.ageGroup === "4-5" || progress.ageGroup === "6-7";
+  const isYoung = ageGroup === "4-5" || ageGroup === "6-7";
 
   // Hoparlör ikonlu buton (tekrar kullanılabilir)
   const Speaker = ({ text }: { text: string }) => (
@@ -155,10 +165,15 @@ export default function Progress() {
       type="button"
       aria-label="Sesli oku"
       className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
-      onClick={e => { e.stopPropagation(); speak(text); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        speak(text);
+      }}
       tabIndex={0}
     >
-      <span role="img" aria-label="Sesli oku">🔊</span>
+      <span role="img" aria-label="Sesli oku">
+        🔊
+      </span>
     </button>
   );
 
@@ -358,40 +373,52 @@ export default function Progress() {
               👨‍👩‍👧 Bugün Ne Öğrendi?
             </h3>
             {/* Son tamamlanan deney özeti */}
-            {allExperiments.length > 0 && allExperiments.some((exp) => exp.status === "completed") && (
+            {allExperiments.length > 0 &&
+              allExperiments.some((exp) => exp.status === "completed") &&
               (() => {
-                const lastCompleted = [...allExperiments].reverse().find((exp) => exp.status === "completed");
+                const lastCompleted = [...allExperiments]
+                  .reverse()
+                  .find((exp) => exp.status === "completed");
                 if (!lastCompleted) return null;
                 return (
                   <div className="mb-6 p-4 bg-green-100/60 border border-green-200 rounded-2xl flex items-center gap-4">
-                    <div className="text-4xl">{categoryIcons[lastCompleted.category as keyof typeof categoryIcons] || "🔬"}</div>
+                    <div className="text-4xl">
+                      {categoryIcons[
+                        lastCompleted.category as keyof typeof categoryIcons
+                      ] || "🔬"}
+                    </div>
                     <div>
                       <p className="font-bold text-[#166534] text-base mb-1">
                         Son Tamamlanan Deney: {lastCompleted.title}
                         {isYoung && (
                           <span className="inline-block align-middle">
-                            <Speaker text={`Son Tamamlanan Deney: ${lastCompleted.title}`} />
+                            <Speaker
+                              text={`Son Tamamlanan Deney: ${lastCompleted.title}`}
+                            />
                           </span>
                         )}
                       </p>
                       <p className="text-xs text-green-900 mb-1">
                         {lastCompleted.description?.substring(0, 100)}...
                         {isYoung && lastCompleted.description && (
-                          <Speaker text={lastCompleted.description.substring(0, 100)} />
+                          <Speaker
+                            text={lastCompleted.description.substring(0, 100)}
+                          />
                         )}
                       </p>
                       {lastCompleted.expectedResults && (
                         <ul className="list-disc list-inside text-xs text-green-800">
-                          {lastCompleted.expectedResults.slice(0, 2).map((result, i) => (
-                            <li key={i}>{result}</li>
-                          ))}
+                          {lastCompleted.expectedResults
+                            .slice(0, 2)
+                            .map((result, i) => (
+                              <li key={i}>{result}</li>
+                            ))}
                         </ul>
                       )}
                     </div>
                   </div>
                 );
-              })()
-            )}
+              })()}
             {/* Son 3 deney kartları */}
             {allExperiments.length > 0 ? (
               <div className="space-y-4">
@@ -404,9 +431,7 @@ export default function Progress() {
                       <div className="flex-1">
                         <p className="font-semibold text-[#1F2937] mb-1">
                           {idx + 1}. {exp.title}
-                          {isYoung && (
-                            <Speaker text={exp.title || ""} />
-                          )}
+                          {isYoung && <Speaker text={exp.title || ""} />}
                         </p>
                         <p className="text-xs text-[#6B7280] mb-2">
                           {exp.description?.substring(0, 80)}...
@@ -421,12 +446,14 @@ export default function Progress() {
                               {isYoung && <Speaker text="Deney Sonucu" />}
                             </p>
                             <ul className="list-disc list-inside text-xs text-green-800">
-                              {exp.expectedResults.slice(0, 2).map((result, i) => (
-                                <li key={i} className="flex items-center">
-                                  {result}
-                                  {isYoung && <Speaker text={result || ""} />}
-                                </li>
-                              ))}
+                              {exp.expectedResults
+                                .slice(0, 2)
+                                .map((result, i) => (
+                                  <li key={i} className="flex items-center">
+                                    {result}
+                                    {isYoung && <Speaker text={result || ""} />}
+                                  </li>
+                                ))}
                             </ul>
                           </div>
                         )}
@@ -436,19 +463,19 @@ export default function Progress() {
                               exp.status === "completed"
                                 ? "bg-green-100 text-green-700"
                                 : exp.status === "in_progress"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : exp.status === "available"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-400"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : exp.status === "available"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-400"
                             }`}
                           >
                             {exp.status === "completed"
                               ? "✅ Tamamlandı"
                               : exp.status === "in_progress"
-                              ? "⏳ Devam Ediyor"
-                              : exp.status === "available"
-                              ? "🕒 Başlamadı"
-                              : "🔒 Kilitli"}
+                                ? "⏳ Devam Ediyor"
+                                : exp.status === "available"
+                                  ? "🕒 Başlamadı"
+                                  : "🔒 Kilitli"}
                           </span>
                           {exp.points && (
                             <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium">

@@ -1,10 +1,12 @@
+import { INATURALIST_API_BASE_URL } from "../config";
+
 /**
  * iNaturalist API Servisi
  * Gerçek API çağrıları için
  * https://api.inaturalist.org/v1/docs/
  */
 
-const BASE_URL = "https://api.inaturalist.org/v1";
+const BASE_URL = INATURALIST_API_BASE_URL;
 
 // Rate limiting: max 60 requests per minute
 let lastRequestTime = 0;
