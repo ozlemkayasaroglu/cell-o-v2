@@ -3,13 +3,13 @@
  * Haftalık deney yönetimi için React hook
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import type {
   WeeklyExperiment,
   WeeklyProgress,
   Badge,
-} from '../types/experimentTypes';
-import experimentEngine from '../engine/experimentEngine';
+} from "../types/experimentTypes";
+import experimentEngine from "../engine/experimentEngine";
 
 interface UseWeeklyExperimentResult {
   // Mevcut deney
@@ -74,8 +74,7 @@ export function useWeeklyExperiment(): UseWeeklyExperimentResult {
       setAllExperiments(all);
       setProgress(prog);
     } catch (err) {
-      console.error('Veri yüklenirken hata:', err);
-      setError('Veriler yüklenemedi. Lütfen tekrar dene.');
+      setError("Veriler yüklenemedi. Lütfen tekrar dene.");
     } finally {
       setLoading(false);
     }

@@ -4,7 +4,7 @@
  * https://api.inaturalist.org/v1/docs/
  */
 
-const BASE_URL = 'https://api.inaturalist.org/v1';
+const BASE_URL = "https://api.inaturalist.org/v1";
 
 // Rate limiting: max 60 requests per minute
 let lastRequestTime = 0;
@@ -45,7 +45,7 @@ export interface INatObservation {
   description: string;
   place_guess: string;
   observed_on: string;
-  quality_grade: 'casual' | 'needs_id' | 'research';
+  quality_grade: "casual" | "needs_id" | "research";
   photos: Array<{
     url: string;
     attribution: string;
@@ -77,7 +77,6 @@ export async function searchTaxa(
     const data = await response.json();
     return data.results || [];
   } catch (error) {
-    console.error('iNaturalist taxa search error:', error);
     return [];
   }
 }
@@ -97,7 +96,6 @@ export async function getTaxonById(taxonId: number): Promise<INatTaxon | null> {
     const data = await response.json();
     return data.results?.[0] || null;
   } catch (error) {
-    console.error('iNaturalist taxon fetch error:', error);
     return null;
   }
 }
@@ -109,13 +107,13 @@ export async function searchMicroscopicOrganisms(
   category: string
 ): Promise<INatTaxon[]> {
   const microscopicQueries: Record<string, string[]> = {
-    protista: ['paramecium', 'amoeba', 'euglena', 'volvox', 'stentor'],
-    bacteria: ['bacteria', 'cyanobacteria'],
-    algae: ['diatom', 'spirogyra', 'chlorella', 'chlamydomonas'],
-    fungi: ['yeast', 'mold', 'aspergillus', 'penicillium'],
-    plant_cells: ['elodea', 'onion epidermis', 'stomata'],
-    animal_cells: ['cheek cells', 'blood cells'],
-    pond_life: ['rotifer', 'hydra', 'daphnia', 'cyclops', 'planaria'],
+    protista: ["paramecium", "amoeba", "euglena", "volvox", "stentor"],
+    bacteria: ["bacteria", "cyanobacteria"],
+    algae: ["diatom", "spirogyra", "chlorella", "chlamydomonas"],
+    fungi: ["yeast", "mold", "aspergillus", "penicillium"],
+    plant_cells: ["elodea", "onion epidermis", "stomata"],
+    animal_cells: ["cheek cells", "blood cells"],
+    pond_life: ["rotifer", "hydra", "daphnia", "cyclops", "planaria"],
   };
 
   const queries = microscopicQueries[category] || [];
@@ -148,7 +146,7 @@ export async function getPopularObservations(
     const data = await response.json();
     return data.results || [];
   } catch (error) {
-    console.error('iNaturalist observations fetch error:', error);
+    console.error("iNaturalist observations fetch error:", error);
     return [];
   }
 }
@@ -172,7 +170,7 @@ export async function getTurkeyObservations(
     const data = await response.json();
     return data.results || [];
   } catch (error) {
-    console.error('iNaturalist Turkey observations error:', error);
+    console.error("iNaturalist Turkey observations error:", error);
     return [];
   }
 }

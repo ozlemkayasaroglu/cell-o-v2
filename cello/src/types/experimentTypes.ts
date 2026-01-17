@@ -5,17 +5,17 @@
 
 // Görev kategorileri
 export type ExperimentCategory =
-  | 'Mikroskop Gözlemi'
-  | 'Hücre Biyolojisi'
-  | 'Mikroorganizmalar'
-  | 'Kristal Oluşumu'
-  | 'Bitki Anatomisi'
-  | 'Su Yaşamı'
-  | 'Mantarlar'
-  | 'Kimyasal Reaksiyon';
+  | "Mikroskop Gözlemi"
+  | "Hücre Biyolojisi"
+  | "Mikroorganizmalar"
+  | "Kristal Oluşumu"
+  | "Bitki Anatomisi"
+  | "Su Yaşamı"
+  | "Mantarlar"
+  | "Kimyasal Reaksiyon";
 
 // Zorluk seviyeleri
-export type ExperimentDifficulty = 'kolay' | 'orta' | 'zor' | 'uzman';
+export type ExperimentDifficulty = "kolay" | "orta" | "zor" | "uzman";
 
 // Gerekli malzemeler
 export interface RequiredMaterial {
@@ -27,17 +27,21 @@ export interface RequiredMaterial {
 // Deney adımları
 export interface ExperimentStep {
   stepNumber: number;
-  instruction: string;
+  instruction?: string; // EN fallback
+  instructionKey?: string; // i18n key
   duration?: string;
-  tip?: string;
+  tip?: string; // EN fallback
+  tipKey?: string; // i18n key
 }
 
 // Haftalık görev
 export interface WeeklyExperiment {
   id: string;
   weekNumber: number;
-  title: string;
-  description: string;
+  title?: string; // EN fallback
+  titleKey?: string; // i18n key
+  description?: string;
+  descriptionKey?: string;
   category: ExperimentCategory;
   difficulty: ExperimentDifficulty;
   estimatedTime: string;
@@ -49,14 +53,15 @@ export interface WeeklyExperiment {
   steps: ExperimentStep[];
   safetyNotes?: string[];
   observationGuide: string[];
-  expectedResults: string[];
+  expectedResults?: string[];
+  expectedResultsKey?: string;
   ageGroups?: string[];
   parentRequired?: boolean;
   variants?: Record<
     string,
     { stepsCount?: number; estimatedTime?: string; steps?: ExperimentStep[] }
   >;
-  status: 'locked' | 'available' | 'in_progress' | 'completed';
+  status: "locked" | "available" | "in_progress" | "completed";
   unlocksAt?: string;
   completedAt?: string;
   userObservation?: {
@@ -97,20 +102,20 @@ export const difficultyPoints: Record<ExperimentDifficulty, number> = {
 
 // Kategori ikonları
 export const categoryIcons: Record<ExperimentCategory, string> = {
-  'Mikroskop Gözlemi': '🔬',
-  'Hücre Biyolojisi': '🧫',
-  Mikroorganizmalar: '🦠',
-  'Kristal Oluşumu': '💎',
-  'Bitki Anatomisi': '🌱',
-  'Su Yaşamı': '💧',
-  Mantarlar: '🍄',
-  'Kimyasal Reaksiyon': '⚗️',
+  "Mikroskop Gözlemi": "🔬",
+  "Hücre Biyolojisi": "🧫",
+  Mikroorganizmalar: "🦠",
+  "Kristal Oluşumu": "💎",
+  "Bitki Anatomisi": "🌱",
+  "Su Yaşamı": "💧",
+  Mantarlar: "🍄",
+  "Kimyasal Reaksiyon": "⚗️",
 };
 
 // Zorluk renkleri
 export const difficultyColors: Record<ExperimentDifficulty, string> = {
-  kolay: '#4ADE80',
-  orta: '#FBBF24',
-  zor: '#FB923C',
-  uzman: '#EF4444',
+  kolay: "#4ADE80",
+  orta: "#FBBF24",
+  zor: "#FB923C",
+  uzman: "#EF4444",
 };

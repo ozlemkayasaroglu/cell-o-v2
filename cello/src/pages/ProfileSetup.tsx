@@ -1,42 +1,43 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const avatars = [
-  { id: 'unicorn', emoji: '🦄' },
-  { id: 'butterfly', emoji: '🦋' },
-  { id: 'ladybug', emoji: '🐞' },
-  { id: 'bunny', emoji: '🐰' },
-  { id: 'cat', emoji: '🐱' },
-  { id: 'dog', emoji: '🐶' },
+  { id: "unicorn", emoji: "🦄" },
+  { id: "butterfly", emoji: "🦋" },
+  { id: "ladybug", emoji: "🐞" },
+  { id: "bunny", emoji: "🐰" },
+  { id: "cat", emoji: "🐱" },
+  { id: "dog", emoji: "🐶" },
 ];
 
 const ageGroups = [
-  { id: '4-5', label: '4-5 yaş', emoji: '🫘' },
-  { id: '6-7', label: '6-7 yaş', emoji: '🌱' },
-  { id: '8-9', label: '8-9 yaş', emoji: '🌿' },
-  { id: '10-12', label: '10-12 yaş', emoji: '🌳' },
+  { id: "4-5", label: "4-5 yaş", emoji: "🫘" },
+  { id: "6-7", label: "6-7 yaş", emoji: "🌱" },
+  { id: "8-9", label: "8-9 yaş", emoji: "🌿" },
+  { id: "10-12", label: "10-12 yaş", emoji: "🌳" },
 ];
 
 const getDefaultNickname = (ageId: string) => {
   switch (ageId) {
-    case '4-5':
-      return 'Küçük Bilim İnsanı';
-    case '6-7':
-      return 'Meraklı Öğrenen';
-    case '8-9':
-      return 'Deney Sever';
-    case '10-12':
-      return 'Bilim Yolcusu';
+    case "4-5":
+      return "Minik Kaşif";
+    case "6-7":
+      return "Bilimci Çocuk";
+    case "8-9":
+      return "Genç Mucit";
+    case "10-12":
+      return "Küçük Bilim İnsanı";
     default:
-      return 'Küçük Bilim İnsanı';
+      return "Minik Kaşif";
   }
 };
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('unicorn');
-  const [selectedAge, setSelectedAge] = useState('8-9');
+
+  const [nickname, setNickname] = useState("");
+  const [selectedAvatar, setSelectedAvatar] = useState("unicorn");
+  const [selectedAge, setSelectedAge] = useState("8-9");
 
   const handleContinue = () => {
     const profile = {
@@ -50,185 +51,156 @@ export default function ProfileSetup() {
       currentStreak: 0,
     };
 
-    localStorage.setItem('user_profile', JSON.stringify(profile));
-    localStorage.setItem('profile_completed', 'true');
-    navigate('/');
+    localStorage.setItem("user_profile", JSON.stringify(profile));
+    localStorage.setItem("profile_completed", "true");
+    navigate("/");
   };
 
-  const handleSkip = () => {
-    const defaultProfile = {
-      nickname: getDefaultNickname(selectedAge),
-      avatar: selectedAvatar,
-      ageGroup: selectedAge,
-      createdAt: new Date().toISOString(),
-      totalPoints: 0,
-      completedExperiments: [],
-      badges: [],
-      currentStreak: 0,
-    };
+  const avatarEmoji = avatars.find((a) => a.id === selectedAvatar)?.emoji;
 
-    localStorage.setItem('user_profile', JSON.stringify(defaultProfile));
-    localStorage.setItem('profile_completed', 'true');
-    navigate('/');
-  };
-
-  const selectedAvatarData = avatars.find((a) => a.id === selectedAvatar);
+  function renderColorfulNickname(nickname: string) {
+    const colors = [
+      "#F59E42",
+      "#14B8A6",
+      "#F472B6",
+      "#3B82F6",
+      "#F59E42",
+      "#14B8A6",
+      "#F472B6",
+      "#3B82F6",
+      "#F59E42",
+      "#14B8A6",
+      "#F472B6",
+      "#3B82F6",
+    ];
+    return (
+      <span>
+        {nickname.split("").map((char, i) => (
+          <span
+            key={i}
+            style={{
+              color: colors[i % colors.length],
+              fontFamily: "Fredoka",
+              fontWeight: "bold",
+            }}
+          >
+            {char}
+          </span>
+        ))}
+      </span>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#F8FEFB]">
-      {/* Skip Button */}
-      <button
-        onClick={handleSkip}
-        className="absolute top-8 right-6 bg-white rounded-full px-4 py-1.5 shadow-sm z-10 flex items-center gap-1 hover:bg-gray-50 transition"
-      >
-        <span className="text-[#222] font-semibold text-[15px]">Atla</span>
-        <span className="text-[#222] text-lg font-bold">›</span>
-      </button>
+    <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4">
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        {/* LEFT – Preview / Illustration */}
+        <div className="bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] flex flex-col items-center justify-center p-10 text-center">
+          <img src="/logo.png" alt="Cell-o" className="w-28 mb-6" />
 
-      {/* Beautiful Header Section */}
-      <div className="w-full bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-b-[32px] overflow-hidden relative mb-8">
-        <div className="max-w-2xl mx-auto px-6 pt-20 pb-16 text-center">
-          {/* Icon Badge */}
-          <div className="inline-flex items-center justify-center w-32 h-32 bg-[#14B8A6]/20 rounded-full mb-6">
-            <span className="text-6xl">🥼</span>
-          </div>
+          <div className="text-[72px] mb-3">{avatarEmoji}</div>
 
-          {/* Title */}
-          <h1 className="text-[32px] font-bold text-[#222] mb-4">
-            Profilini Oluştur!
-          </h1>
-
-          {/* Description */}
-          <p className="text-[17px] text-[#4B5563] leading-relaxed max-w-md mx-auto">
-            Bilim yolculuğuna başlamadan önce kendini tanıtalım. Takma adını
-            seç, avatarını belirle ve keşfetmeye hazır ol!
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-6 pb-10 overflow-y-auto">
-        {/* Nickname Input */}
-        <div className="mb-6">
-          <label className="block text-base text-[#222] font-semibold mb-3">
-            Takma Adın
-          </label>
-          <div className="flex items-center gap-3 bg-white rounded-2xl px-4 py-[14px] border-2 border-gray-100 shadow-sm">
-            <svg
-              className="w-5 h-5 text-[#14B8A6]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-            <input
-              type="text"
-              placeholder="Örn: Süper Kaşif"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              maxLength={20}
-              className="flex-1 outline-none text-base text-[#1F2937] placeholder:text-[#94A3B8]"
-            />
-          </div>
-        </div>
-
-        {/* Avatar Selection */}
-        <div className="mb-6">
-          <label className="block text-base text-[#222] font-semibold mb-3">
-            Avatarını Seç
-          </label>
-          <div className="grid grid-cols-6 gap-[10px]">
-            {avatars.map((avatar) => (
-              <button
-                key={avatar.id}
-                onClick={() => setSelectedAvatar(avatar.id)}
-                className={`relative aspect-square rounded-2xl flex items-center justify-center text-[40px] transition border-2 shadow-sm ${
-                  selectedAvatar === avatar.id
-                    ? 'bg-white border-[#F59E0B] border-[3px] shadow-md'
-                    : 'bg-white border-gray-100'
-                }`}
-              >
-                {avatar.emoji}
-                {selectedAvatar === avatar.id && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#10B981] rounded-full flex items-center justify-center shadow-sm">
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={3}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Age Group Selection */}
-        <div className="mb-6">
-          <label className="block text-base text-[#222] font-semibold mb-3">
-            Yaş Grubun
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            {ageGroups.map((age) => (
-              <button
-                key={age.id}
-                onClick={() => setSelectedAge(age.id)}
-                className={`py-4 rounded-2xl flex flex-col items-center transition border-[3px] shadow-sm ${
-                  selectedAge === age.id
-                    ? 'bg-white border-[#10B981] shadow-md'
-                    : 'bg-white border-gray-100'
-                }`}
-              >
-                <span className="text-[38px] mb-1">{age.emoji}</span>
-                <span
-                  className={`text-[13px] font-semibold ${
-                    selectedAge === age.id ? 'text-[#1F2937]' : 'text-[#6B7280]'
-                  }`}
-                >
-                  {age.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Preview */}
-        <div className="bg-gradient-to-br from-[#14B8A6]/10 to-[#0D9488]/10 border-2 border-[#14B8A6]/30 rounded-[20px] p-4 text-center mb-6 shadow-sm">
-          <div className="text-[64px] ">{selectedAvatarData?.emoji}</div>
-          <h2 className="text-[22px] font-bold text-[#222] mb-1">
-            {nickname.trim() || getDefaultNickname(selectedAge)}
+          <h2 className="text-2xl font-extrabold text-[#0F172A] mb-1">
+            {renderColorfulNickname(
+              nickname.trim() || getDefaultNickname(selectedAge)
+            )}
           </h2>
-          <p className="text-sm text-[#6B7280]">
+
+          <p className="text-[#475569]">
             {ageGroups.find((a) => a.id === selectedAge)?.label}
           </p>
         </div>
 
-        {/* Continue Button */}
-        <button
-          onClick={handleContinue}
-          className="w-full bg-[#14B8A6] text-white font-bold text-lg py-[18px] rounded-[32px] shadow-lg shadow-[#14B8A6]/20 hover:bg-[#0D9488] transition flex items-center justify-center gap-2"
-        >
-          <span>Hazırım!</span>
-          <span className="text-xl">🚀</span>
-        </button>
+        {/* RIGHT – Form */}
+        <div className="p-8 md:p-12 flex flex-col justify-center">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-2">
+            Profilini Oluştur
+          </h1>
 
-        {/* Privacy Note */}
-        <p className="text-[13px] text-[#6B7280] text-center mt-4">
-          🔒 Bilgilerin sadece bu cihazda saklanır
-        </p>
+          <p className="text-[#475569] mb-8 max-w-md">
+            Sana özel deneyleri hazırlayabilmemiz için birkaç adım yeterli.
+          </p>
+
+          {/* Nickname */}
+          <div className="mb-6">
+            <label className="font-semibold mb-2 block">Takma Ad</label>
+            <input
+              type="text"
+              placeholder="Takma adını yaz"
+              value={nickname}
+              maxLength={20}
+              onChange={(e) => setNickname(e.target.value)}
+              className="w-full rounded-2xl border-2 border-gray-100 px-4 py-3 focus:outline-none focus:border-[#14B8A6]"
+            />
+          </div>
+
+          {/* Avatar */}
+          <div className="mb-6">
+            <label className="font-semibold mb-2 block">Avatar Seç</label>
+            <div className="grid grid-cols-6 gap-2">
+              {avatars.map((a) => (
+                <button
+                  key={a.id}
+                  onClick={() => setSelectedAvatar(a.id)}
+                  className={`aspect-square rounded-2xl text-3xl flex items-center justify-center border-2 transition ${
+                    selectedAvatar === a.id
+                      ? "border-[#14B8A6] bg-[#ECFEFF]"
+                      : "border-gray-100 bg-white"
+                  }`}
+                >
+                  {a.emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Age Group */}
+          <div className="mb-8">
+            <label className="font-semibold mb-2 block">Yaş Grubu</label>
+            <div className="grid grid-cols-2 gap-3">
+              {ageGroups.map((age) => (
+                <button
+                  key={age.id}
+                  onClick={() => setSelectedAge(age.id)}
+                  className={`py-4 rounded-2xl flex flex-col items-center border-2 transition ${
+                    selectedAge === age.id
+                      ? "border-[#14B8A6] bg-[#ECFEFF]"
+                      : "border-gray-100 bg-white"
+                  }`}
+                >
+                  <span className="text-3xl">{age.emoji}</span>
+                  <span className="text-sm font-semibold mt-1">
+                    {age.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={handleContinue}
+            className="
+    inline-flex items-center justify-center gap-3
+    bg-[length:300%_300%]
+    bg-gradient-to-r
+    from-[#F59E42]
+    via-[#14B8A6]
+    via-[#F472B6]
+    to-[#3B82F6]
+    animate-gradient
+    text-white font-black text-lg
+    px-8 py-4 rounded-full
+    shadow-lg
+    hover:scale-105
+    transition-all duration-300
+    active:scale-95
+    w-full md:w-fit
+  "
+          >
+            Deneylere Başla 🚀
+          </button>
+        </div>
       </div>
     </div>
   );

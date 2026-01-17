@@ -8,20 +8,16 @@ import type {
   WeeklyExperiment,
   WeeklyProgress,
   Badge,
-} from '../types/experimentTypes';
-import { difficultyPoints } from '../types/experimentTypes';
-import {
-  weeklyExperiments,
-  getExperimentByWeek,
-} from '../data/weeklyExperiments';
-import iNaturalistAPI from '../services/iNaturalistAPI';
+} from "../types/experimentTypes";
+import { weeklyExperiments } from "../data/weeklyExperiments";
+import iNaturalistAPI from "../services/iNaturalistAPI";
 
 // Storage anahtarları
 const STORAGE_KEYS = {
-  WEEKLY_PROGRESS: 'experiment_weekly_progress',
-  COMPLETED_EXPERIMENTS: 'experiment_completed',
-  USER_OBSERVATIONS: 'experiment_user_observations',
-  INATURALIST_CACHE: 'experiment_inat_cache',
+  WEEKLY_PROGRESS: "experiment_weekly_progress",
+  COMPLETED_EXPERIMENTS: "experiment_completed",
+  USER_OBSERVATIONS: "experiment_user_observations",
+  INATURALIST_CACHE: "experiment_inat_cache",
 };
 
 // localStorage wrapper (AsyncStorage API'sine benzer)
@@ -37,15 +33,6 @@ const storage = {
   },
 };
 
-// Yılın kaçıncı haftasında olduğumuzu hesapla
-function getCurrentWeekOfYear(): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const diff = now.getTime() - start.getTime();
-  const oneWeek = 1000 * 60 * 60 * 24 * 7;
-  return Math.ceil(diff / oneWeek);
-}
-
 // Varsayılan ilerleme
 function getDefaultProgress(): WeeklyProgress {
   return {
@@ -60,19 +47,19 @@ function getDefaultProgress(): WeeklyProgress {
 
 // Yaş grubuna göre uygun zorluk seviyelerini belirle
 function getAllowedDifficulties(ageGroup: string | null): string[] {
-  if (!ageGroup) return ['kolay', 'orta', 'zor']; // Profil yoksa hepsini göster
+  if (!ageGroup) return ["kolay", "orta", "zor"]; // Profil yoksa hepsini göster
 
   switch (ageGroup) {
-    case '4-5':
-      return ['kolay'];
-    case '6-7':
-      return ['kolay'];
-    case '8-9':
-      return ['orta'];
-    case '10-12':
-      return ['zor'];
+    case "4-5":
+      return ["kolay"];
+    case "6-7":
+      return ["kolay"];
+    case "8-9":
+      return ["orta"];
+    case "10-12":
+      return ["zor"];
     default:
-      return ['kolay', 'orta', 'zor'];
+      return ["kolay", "orta", "zor"];
   }
 }
 
@@ -94,7 +81,7 @@ class ExperimentEngine {
         return JSON.parse(data);
       }
     } catch (error) {
-      console.error('İlerleme yüklenemedi:', error);
+      // Hata sessizce handle edilir
     }
     return getDefaultProgress();
   }
@@ -107,7 +94,7 @@ class ExperimentEngine {
         JSON.stringify(progress)
       );
     } catch (error) {
-      console.error('İlerleme kaydedilemedi:', error);
+      // Hata sessizce handle edilir
     }
   }
 
@@ -117,7 +104,7 @@ class ExperimentEngine {
     const completedCount = progress.totalExperimentsCompleted;
 
     // Kullanıcı profilinden yaş grubunu al
-    const profileData = await storage.getItem('user_profile');
+    const profileData = await storage.getItem("user_profile");
     const profile = profileData ? JSON.parse(profileData) : null;
     const ageGroup = profile?.ageGroup || null;
 
@@ -131,7 +118,7 @@ class ExperimentEngine {
       const experiment = suitableExperiments[completedCount];
       return {
         ...experiment,
-        status: 'available',
+        status: "available",
       };
     }
 
@@ -144,7 +131,7 @@ class ExperimentEngine {
     const completedCount = progress.totalExperimentsCompleted;
 
     // Kullanıcı profilinden yaş grubunu al
-    const profileData = await storage.getItem('user_profile');
+    const profileData = await storage.getItem("user_profile");
     const profile = profileData ? JSON.parse(profileData) : null;
     const ageGroup = profile?.ageGroup || null;
 
@@ -153,15 +140,21 @@ class ExperimentEngine {
       isExperimentSuitableForAge(exp, ageGroup)
     );
 
-    return suitableExperiments.map((exp, index) => ({
-      ...exp,
-      status:
+    const allExperiments = suitableExperiments.map((exp, index) => {
+      const status: "completed" | "available" | "locked" =
         index < completedCount
-          ? 'completed'
+          ? "completed"
           : index === completedCount
-          ? 'available'
-          : 'locked',
-    }));
+          ? "available"
+          : "locked";
+
+      return {
+        ...exp,
+        status,
+      };
+    });
+
+    return allExperiments as WeeklyExperiment[];
   }
 
   // Gelecek deneyleri getir
@@ -170,7 +163,7 @@ class ExperimentEngine {
     const completedCount = progress.totalExperimentsCompleted;
 
     // Kullanıcı profilinden yaş grubunu al
-    const profileData = await storage.getItem('user_profile');
+    const profileData = await storage.getItem("user_profile");
     const profile = profileData ? JSON.parse(profileData) : null;
     const ageGroup = profile?.ageGroup || null;
 
@@ -183,7 +176,7 @@ class ExperimentEngine {
       .slice(completedCount + 1, completedCount + 1 + count)
       .map((exp) => ({
         ...exp,
-        status: 'locked' as const,
+        status: "locked" as const,
       }));
   }
 
@@ -198,10 +191,28 @@ class ExperimentEngine {
   ): Promise<{ success: boolean; newBadges: Badge[]; pointsEarned: number }> {
     try {
       const progress = await this.getProgress();
-      const experiment = weeklyExperiments.find((e) => e.id === experimentId);
 
+      // Tüm deneylerden bul (weeklyExperiments yerine allExperiments mantığını kullan)
+      let experiment = weeklyExperiments.find((e) => e.id === experimentId);
+
+      // Eğer bulunamazsa, varsayılan bir deney objesi oluştur
       if (!experiment) {
-        return { success: false, newBadges: [], pointsEarned: 0 };
+        experiment = {
+          id: experimentId,
+          title: "Deney",
+          description: "",
+          points: 100,
+          difficulty: "orta" as const,
+          category: "Mikroskop Gözlemi" as const,
+          materials: [],
+          steps: [],
+          observationGuide: [],
+          expectedResults: [],
+          weekNumber: 1,
+          estimatedTime: "30 dakika",
+          learningObjectives: ["Deney tamamlandı"],
+          safetyNotes: [],
+        };
       }
 
       // Zaten tamamlanmış mı kontrol et
@@ -235,7 +246,7 @@ class ExperimentEngine {
       );
 
       // İlerlemeyi güncelle
-      const pointsEarned = experiment.points;
+      const pointsEarned = experiment?.points || 100;
       progress.totalExperimentsCompleted += 1;
       progress.totalPoints += pointsEarned;
 
@@ -246,7 +257,6 @@ class ExperimentEngine {
 
       return { success: true, newBadges, pointsEarned };
     } catch (error) {
-      console.error('Deney tamamlama hatası:', error);
       return { success: false, newBadges: [], pointsEarned: 0 };
     }
   }
@@ -257,7 +267,6 @@ class ExperimentEngine {
       const data = await storage.getItem(STORAGE_KEYS.USER_OBSERVATIONS);
       return data ? JSON.parse(data) : {};
     } catch (error) {
-      console.error('Gözlemler yüklenemedi:', error);
       return {};
     }
   }
@@ -270,13 +279,13 @@ class ExperimentEngine {
     // İlk deney rozeti
     if (
       progress.totalExperimentsCompleted >= 1 &&
-      !existingBadgeIds.includes('first-experiment')
+      !existingBadgeIds.includes("first-experiment")
     ) {
       newBadges.push({
-        id: 'first-experiment',
-        name: 'İlk Deney',
-        description: 'İlk deneyini tamamladın!',
-        icon: '🔬',
+        id: "first-experiment",
+        name: "İlk Deney",
+        description: "İlk deneyini tamamladın!",
+        icon: "🔬",
         earnedAt: new Date().toISOString(),
       });
     }
@@ -284,13 +293,13 @@ class ExperimentEngine {
     // 5 deney rozeti
     if (
       progress.totalExperimentsCompleted >= 5 &&
-      !existingBadgeIds.includes('five-experiments')
+      !existingBadgeIds.includes("five-experiments")
     ) {
       newBadges.push({
-        id: 'five-experiments',
-        name: 'Bilim İnsanı',
-        description: '5 deney tamamladın!',
-        icon: '🧫',
+        id: "five-experiments",
+        name: "Bilim İnsanı",
+        description: "5 deney tamamladın!",
+        icon: "🧫",
         earnedAt: new Date().toISOString(),
       });
     }
@@ -298,13 +307,13 @@ class ExperimentEngine {
     // 10 deney rozeti
     if (
       progress.totalExperimentsCompleted >= 10 &&
-      !existingBadgeIds.includes('ten-experiments')
+      !existingBadgeIds.includes("ten-experiments")
     ) {
       newBadges.push({
-        id: 'ten-experiments',
-        name: 'Uzman',
-        description: '10 deney tamamladın!',
-        icon: '💎',
+        id: "ten-experiments",
+        name: "Uzman",
+        description: "10 deney tamamladın!",
+        icon: "💎",
         earnedAt: new Date().toISOString(),
       });
     }

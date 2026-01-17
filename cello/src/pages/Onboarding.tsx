@@ -1,116 +1,148 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-const slides = [
-  {
-    key: 'explore',
-    image: '/onboarding.png',
-    title: 'Keşfet & Deney Yap!',
-    description:
-      'Küçük laboratuvarımıza katıl, merakın harika keşiflere yol açsın. Güvenli, eğlenceli ve ilham dolu bir deneyim seni bekliyor.',
-    icon: '🧪',
-  },
-];
+import { useNavigate } from "react-router-dom";
+import AppFooter from "../components/AppFooter";
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleNext = () => {
-    if (currentIndex === slides.length - 1) {
-      localStorage.setItem('onboarding_completed', 'true');
-      navigate('/profile-setup');
-    } else {
-      setCurrentIndex(currentIndex + 1);
-    }
+  const handleStart = () => {
+    localStorage.setItem("onboarding_completed", "true");
+    navigate("/profile-setup");
   };
-
-  const handleSkip = () => {
-    localStorage.setItem('onboarding_completed', 'true');
-    navigate('/profile-setup');
-  };
-
-  const slide = slides[currentIndex];
 
   return (
-    <div className="min-h-screen bg-[#F8FEFB] flex flex-col">
-      {/* Top Illustration */}
-      <div
-        className="relative w-full overflow-hidden rounded-b-[32px] bg-[#E0F7F1]"
-        style={{ height: 'min(110vw, 500px)' }}
-      >
-        <img
-          src={slide.image}
-          alt={slide.title}
-          className="w-full h-full object-cover"
-        />
-
-        {/* Logo - positioned at bottom center, overlapping */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 z-20">
-          <div className="w-[140px] h-[140px] bg-white rounded-3xl shadow-lg p-2 flex items-center justify-center">
+    <div className="min-h-screen justify-between">
+      <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4">
+        <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+          {/* LEFT – Illustration */}
+          <div className="relative flex items-center justify-center bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] p-8 md:p-12">
             <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-full h-full object-contain rounded-2xl"
+              src="/onboarding.png"
+              alt="Cell-o onboarding"
+              className="w-full max-w-sm md:max-w-md object-contain rounded-2xl "
             />
           </div>
-        </div>
 
-        {/* Skip Button */}
-        <button
-          onClick={handleSkip}
-          className="absolute top-8 right-6 bg-white rounded-[20px] px-4 py-1.5 shadow-sm flex items-center gap-1 hover:bg-gray-50 transition"
-        >
-          <span className="text-[#222] font-semibold text-[15px]">Atla</span>
-          <span className="text-[#222] text-lg font-bold mt-0.5">›</span>
-        </button>
-      </div>
+          {/* RIGHT – Content */}
+          <div className="flex flex-col justify-center p-8 md:p-12 text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0F172A] leading-tight mb-4 font-baloo">
+              Bilim artık <br className="hidden md:block" />
+              çok{" "}
+              <span>
+                <span style={{ color: "#F59E42", fontFamily: "Fredoka" }}>
+                  k
+                </span>
+                <span
+                  style={{
+                    color: "#14B8A6",
+                    fontFamily: "Fredoka",
+                  }}
+                >
+                  e
+                </span>
+                <span style={{ color: "#F472B6", fontFamily: "Fredoka" }}>
+                  y
+                </span>
+                <span style={{ color: "#3B82F6", fontFamily: "Fredoka" }}>
+                  i
+                </span>
+                <span style={{ color: "#F59E42", fontFamily: "Fredoka" }}>
+                  f
+                </span>
+                <span style={{ color: "#14B8A6", fontFamily: "Fredoka" }}>
+                  l
+                </span>
+                <span style={{ color: "#F472B6", fontFamily: "Fredoka" }}>
+                  i
+                </span>
+              </span>
+            </h1>
 
-      {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-6 pt-16 pb-10 max-w-2xl mx-auto w-full">
-        {/* Icon Badge */}
-        <div className="w-12 h-12 bg-[#14B8A6]/15 rounded-full flex items-center justify-center mb-5">
-          <span className="text-[28px]">{slide.icon}</span>
-        </div>
+            <span className="text-base md:text-lg text-[#475569] max-w-md mb-4">
+              <span
+                style={{
+                  color: "#14B8A6",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                c
+              </span>
+              <span
+                style={{
+                  color: "#F472B6",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                e
+              </span>
+              <span
+                style={{
+                  color: "#3B82F6",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                l
+              </span>
+              <span
+                style={{
+                  color: "#F59E42",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                l
+              </span>
+              <span
+                style={{
+                  color: "#14B8A6",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                -
+              </span>
+              <span
+                style={{
+                  color: "#F472B6",
+                  fontFamily: "Fredoka",
+                  fontWeight: "bold",
+                }}
+              >
+                o{" "}
+              </span>
+              ile çocuklar her hafta evde, güvenli ve eğlenceli deneyler yaparak
+              bilimi keşfeder.
+            </span>
 
-        {/* Title */}
-        <h1 className="text-[26px] font-bold text-[#222] text-center mb-3">
-          {slide.title}
-        </h1>
-
-        {/* Description */}
-        <p className="text-base text-[#4B5563] text-center mb-7 leading-[22px] max-w-md">
-          {slide.description}
-        </p>
-
-        {/* Dots */}
-        {slides.length > 1 && (
-          <div className="flex gap-2 mb-8">
-            {slides.map((_, idx) => (
-              <div
-                key={idx}
-                className={`w-[22px] h-[7px] rounded-[4px] transition-colors ${
-                  idx === currentIndex ? 'bg-[#14B8A6]' : 'bg-[#E5E7EB]'
-                }`}
-              />
-            ))}
+            <button
+              onClick={handleStart}
+              className="
+    inline-flex items-center justify-center gap-3
+    bg-[length:300%_300%]
+    bg-gradient-to-r
+    from-[#F59E42]
+    via-[#14B8A6]
+    via-[#F472B6]
+    to-[#3B82F6]
+    animate-gradient
+    text-white font-black text-lg
+    px-8 py-4 rounded-full
+    shadow-lg
+    hover:scale-105
+    transition-all duration-300
+    active:scale-95
+    w-full md:w-fit
+  "
+            >
+              Deneylere Başla
+              <span className="text-2xl">🚀</span>
+            </button>
           </div>
-        )}
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Start Button */}
-        <button
-          onClick={handleNext}
-          className="w-full max-w-md bg-[#14B8A6] text-white font-bold text-lg py-[18px] px-8 rounded-[32px] shadow-lg shadow-[#14B8A6]/20 flex items-center justify-center gap-2 hover:bg-[#0D9488] transition"
-        >
-          <span>
-            {currentIndex === slides.length - 1 ? 'Keşfetmeye Başla' : 'İleri'}
-          </span>
-          <span className="text-[22px] font-bold mt-0.5">→</span>
-        </button>
+        </div>
       </div>
+      <AppFooter />
     </div>
   );
 }

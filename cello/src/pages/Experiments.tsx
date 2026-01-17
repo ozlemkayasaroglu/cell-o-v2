@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 
@@ -6,79 +5,88 @@ export default function Experiments() {
   const navigate = useNavigate();
   const { allExperiments, progress, loading } = useWeeklyExperiment();
 
-  useEffect(() => {}, [allExperiments, progress, loading]);
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F0FDF9] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">🔬</div>
-          <p className="text-base text-[#6B7280]">Deneyler yükleniyor...</p>
+          <div className="text-6xl mb-4 animate-pulse">🧪</div>
+          <p className="text-base text-[#6B7280]">Deneyler hazırlanıyor...</p>
         </div>
       </div>
     );
   }
 
+  const completionRate =
+    allExperiments.length === 0
+      ? 0
+      : (progress.totalExperimentsCompleted / allExperiments.length) * 100;
+
   return (
-    <div className="min-h-screen bg-[#F0FDF9]">
-      {/* Header */}
-      <div className="bg-[#0D9488] pt-[60px] pb-[30px] px-5 text-center">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-5xl mb-3">🧪</div>
-          <h1 className="text-[26px] font-bold text-white mb-1">
-            Haftalık Deneyler
-          </h1>
-          <p className="text-sm text-white/90">
-            Bilim dünyasını keşfetmeye hazır mısın?
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT – Onboarding Hero */}
+        <div className="lg:col-span-1 bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 flex flex-col justify-between shadow-sm">
+          <div>
+            <h1 className="text-[28px] font-extrabold text-[#0F172A] mb-3"></h1>
 
-      {/* Content */}
-      <div className="p-5 max-w-2xl mx-auto pb-24">
-        {/* Progress Card */}
-        <div className="bg-white rounded-xl p-4 shadow-sm mb-5">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-[#1F2937]">
-              İlerleme
-            </span>
-            <span className="text-sm font-bold text-[#0D9488]">
-              {progress.totalExperimentsCompleted} / {allExperiments.length}
-            </span>
+            <p className="text-[#475569] leading-relaxed mb-6">
+              Her hafta yeni bir deneyle keşfet, öğren ve yıldızları topla ✨
+            </p>
+
+            {/* Progress Card */}
+            <div className="bg-white/70 rounded-2xl p-4">
+              <div className="flex justify-between text-sm font-semibold mb-2">
+                <span>İlerleme</span>
+                <span className="text-[#0D9488]">
+                  {progress.totalExperimentsCompleted} / {allExperiments.length}
+                </span>
+              </div>
+
+              <div className="w-full bg-white h-3 rounded-full overflow-hidden">
+                <div
+                  className="bg-[length:300%_300%]
+bg-gradient-to-r
+from-[#F59E42]
+via-[#14B8A6]
+via-[#F472B6]
+to-[#3B82F6] h-3 rounded-full transition-all"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+
+              <p className="text-xs text-[#6B7280] mt-3">
+                Devam et! Yeni deneyler seni bekliyor 🚀
+              </p>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-[#0D9488] h-3 rounded-full transition-all"
-              style={{
-                width: `${
-                  (progress.totalExperimentsCompleted / allExperiments.length) *
-                  100
-                }%`,
-              }}
-            />
-          </div>
+
+          <img
+            src="/experiments-illustration.png"
+            alt=""
+            className="mt-8 w-full max-w-xs mx-auto hidden lg:block"
+          />
         </div>
 
-        {/* Experiments List */}
-        {allExperiments.length > 0 ? (
-          <div className="space-y-3">
-            {allExperiments.map((exp, index) => {
+        {/* RIGHT – Step / Experiment Cards */}
+        <div className="lg:col-span-2 flex flex-col gap-5 mb-12">
+          {allExperiments.length > 0 ? (
+            allExperiments.map((exp, index) => {
               const isCompleted = exp.status === "completed";
-              const isAvailable = exp.status === "available";
               const isLocked = exp.status === "locked";
 
               return (
                 <div
                   key={exp.id}
-                  className={`bg-white rounded-2xl p-5 shadow-sm ${
-                    isLocked ? "opacity-50" : ""
+                  className={`bg-white rounded-[32px] p-6 shadow-sm transition ${
+                    isLocked ? "opacity-50" : "hover:shadow-md"
                   }`}
                 >
                   {/* Header */}
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="bg-[#0D9488] text-white text-xs font-bold px-3 py-1 rounded-full">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="bg-[#14B8A6] text-white text-xs font-bold px-4 py-1 rounded-full">
                       Hafta {index + 1}
                     </span>
+
                     <span
                       className={`text-xs font-bold px-3 py-1 rounded-full ${
                         exp.difficulty === "kolay"
@@ -96,31 +104,30 @@ export default function Experiments() {
                     </span>
                   </div>
 
-                  {/* Title & Description */}
-                  <h3 className="text-lg font-bold text-[#1F2937] mb-2">
-                    {(exp as any).childFriendly?.title || exp.title}
+                  {/* Title */}
+                  <h3 className="text-xl font-extrabold text-[#0F172A] mb-2">
+                    {exp.title}
                   </h3>
-                  <p className="text-sm text-[#6B7280] leading-5 mb-3">
-                    {(exp as any).childFriendly?.description || exp.description}
+
+                  <p className="text-sm text-[#475569] leading-relaxed mb-4">
+                    {exp.description}
                   </p>
 
-                  {/* Meta Info */}
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex gap-4 text-[13px] text-[#6B7280]">
-                      <span>⏱️ {exp.estimatedTime}</span>
-                      <span>⭐ +{exp.points} XP</span>
-                    </div>
-                    {isLocked && (
-                      <span className="text-xs text-[#6B7280]">🔒 Kilitli</span>
-                    )}
+                  {/* Meta */}
+                  <div className="flex flex-wrap gap-4 text-sm text-[#64748B] mb-5">
+                    <span>⏱️ {exp.estimatedTime}</span>
+                    <span>⭐ +{exp.points} XP</span>
+
                     {isCompleted && (
-                      <span className="text-xs text-[#059669]">
+                      <span className="font-semibold text-[#059669]">
                         ✓ Tamamlandı
                       </span>
                     )}
+
+                    {isLocked && <span>🔒 Kilitli</span>}
                   </div>
 
-                  {/* Button */}
+                  {/* CTA */}
                   <button
                     disabled={isLocked}
                     onClick={() => {
@@ -128,30 +135,30 @@ export default function Experiments() {
                         navigate(`/experiment/${exp.id}`);
                       }
                     }}
-                    className={`w-full py-3 rounded-xl font-semibold text-sm transition ${
+                    className={`w-full py-[18px] rounded-[32px] font-black transition ${
                       isLocked
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        ? "bg-rose-300 text-rose-100 cursor-not-allowed"
                         : isCompleted
-                        ? "bg-[#D1FAE5] text-[#059669]"
-                        : "bg-[#0D9488] text-white hover:bg-[#0D9488]/90"
+                        ? "bg-gradient-to-br from-[#6EE7B7] to-[#38BDF8] text-white"
+                        : "bg-[length:300%_300%] bg-gradient-to-r from-[#F59E42] via-[#14B8A6] via-[#F472B6] to-[#3B82F6] animate-gradient text-white "
                     }`}
                   >
                     {isLocked
                       ? "Kilitli"
                       : isCompleted
-                      ? "Tekrar Aç"
-                      : "Deneye Başla!"}
+                      ? "Tekrar Yap"
+                      : "Deneye Başla 🚀"}
                   </button>
                 </div>
               );
-            })}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl p-8 text-center shadow-sm">
-            <div className="text-6xl mb-4">🔬</div>
-            <p className="text-base text-[#6B7280]">Henüz deney bulunamadı!</p>
-          </div>
-        )}
+            })
+          ) : (
+            <div className="bg-white rounded-[32px] p-10 text-center shadow-sm mb-12">
+              <div className="text-6xl mb-4">🔬</div>
+              <p className="text-base text-[#6B7280]">Henüz deney bulunmuyor</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

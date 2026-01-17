@@ -1,8 +1,8 @@
-import { Home, Microscope, TrendingUp } from 'lucide-react';
+import { Home, Microscope, TrendingUp } from "lucide-react";
 
 interface TabNavigationProps {
-  activeTab: 'home' | 'experiments' | 'progress';
-  onTabChange: (tab: 'home' | 'experiments' | 'progress') => void;
+  activeTab: "home" | "experiments" | "progress";
+  onTabChange: (tab: "home" | "experiments" | "progress") => void;
 }
 
 export default function TabNavigation({
@@ -10,9 +10,9 @@ export default function TabNavigation({
   onTabChange,
 }: TabNavigationProps) {
   const tabs = [
-    { id: 'home' as const, label: 'Ana Sayfa', Icon: Home },
-    { id: 'experiments' as const, label: 'Deneyler', Icon: Microscope },
-    { id: 'progress' as const, label: 'İlerleme', Icon: TrendingUp },
+    { id: "home" as const, label: "Ana Sayfa", Icon: Home },
+    { id: "experiments" as const, label: "Deneyler", Icon: Microscope },
+    { id: "progress" as const, label: "İlerleme", Icon: TrendingUp },
   ];
 
   return (
@@ -23,13 +23,13 @@ export default function TabNavigation({
             key={id}
             onClick={() => onTabChange(id)}
             className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-              activeTab === id ? 'text-[#0D9488]' : 'text-[#6B7280]'
+              activeTab === id ? "text-[#0D9488]" : "text-[#6B7280]"
             }`}
           >
             <Icon
               size={24}
               strokeWidth={2}
-              className={activeTab === id ? 'text-[#0D9488]' : 'text-[#6B7280]'}
+              className={activeTab === id ? "text-[#0D9488]" : "text-[#6B7280]"}
             />
             <span className="text-xs font-semibold mt-1">{label}</span>
           </button>
