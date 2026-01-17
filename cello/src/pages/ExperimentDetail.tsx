@@ -64,7 +64,12 @@ export default function ExperimentDetail() {
   const navigate = useNavigate();
   const { allExperiments, completeExperiment } = useWeeklyExperiment();
 
-  const [experiment, setExperiment] = useState<WeeklyExperiment | null>(null);
+  // observationGuide elemanları hem string hem {text: string} olabilir
+  type ObservationGuideItem = string | { text: string };
+
+  const [experiment, setExperiment] = useState<
+    (WeeklyExperiment & { observationGuide: ObservationGuideItem[] }) | null
+  >(null);
   const [step, setStep] = useState(0);
   const [showSurvey, setShowSurvey] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -87,53 +92,98 @@ export default function ExperimentDetail() {
   const isYoung = ageGroup === "4-5" || ageGroup === "6-7";
   const current = experiment.steps[step];
 
+  // Speaker bileşeni
+  const Speaker = ({ text }: { text: string }) => (
+    <button
+      type="button"
+      aria-label="Sesli oku"
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+      onClick={(e) => {
+        e.stopPropagation();
+        speak(text);
+      }}
+      tabIndex={0}
+    >
+      <span role="img" aria-label="Sesli oku">
+        🔊
+      </span>
+    </button>
+  );
+
   /* ---------- Survey ---------- */
 
   if (showSurvey) {
     return (
       <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4">
         <div className="w-full max-w-2xl bg-white rounded-3xl p-8 shadow-xl">
-          <h1 className="text-2xl font-extrabold mb-6 text-center">
-            Deney Sonu Anketi 📋
-          </h1>
-
-          {experiment.observationGuide.map((q, i) => (
-            <div key={i} className="mb-5">
-              <p className="font-semibold mb-2">
-                {i + 1}. {cleanText(q.text ?? q)}
-              </p>
-              {!isYoung && (
-                <input
-                  className="w-full border-2 rounded-xl px-4 py-3"
-                  value={answers[i]}
-                  onChange={(e) => {
-                    const copy = [...answers];
-                    copy[i] = e.target.value;
-                    setAnswers(copy);
-                  }}
-                />
+          <div className="flex flex-col items-center mb-6">
+            <span className="text-4xl md:text-5xl mb-2 animate-float">📋</span>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-[#7C3AED] mb-1 text-center drop-shadow">
+              Deney Sonu Anketi
+              {isYoung && <Speaker text="Deney Sonu Anketi" />}
+            </h1>
+            <p className="text-[#6D28D9] text-sm font-semibold mb-2 text-center">
+              Deneyini tamamladın, şimdi gözlemlerini paylaş!
+              {isYoung && (
+                <Speaker text="Deneyini tamamladın, şimdi gözlemlerini paylaş!" />
               )}
-            </div>
-          ))}
+            </p>
+          </div>
 
-          <button
-            onClick={async () => {
-              await completeExperiment(experiment.id, {
-                notes: answers.join(" | "),
-                rating: 5,
-              });
-              navigate("/experiments");
-            }}
-            className="w-full mt-6 bg-[length:300%_300%]
-    bg-gradient-to-r
-    from-[#F59E42]
-    via-[#14B8A6]
-    via-[#F472B6]
-    to-[#3B82F6]
-    animate-gradient text-white font-black py-4 rounded-full hover:scale-105 transition"
-          >
-            Deneyi Tamamla ✓
-          </button>
+          <div className="flex flex-col gap-4">
+            {experiment.observationGuide.map((q: ObservationGuideItem, i) => {
+              const questionText = typeof q === "string" ? q : q.text;
+              return (
+                <div
+                  key={i}
+                  className="bg-gradient-to-br from-[#F3E8FF] to-[#E9D5FF] rounded-2xl p-4 shadow flex flex-col"
+                >
+                  <p className="font-bold text-[#7C3AED] mb-2 text-base flex items-center">
+                    <span className="inline-block w-6 h-6 rounded-full bg-[#C4B5FD] text-white flex items-center justify-center mr-2 font-extrabold">
+                      {i + 1}
+                    </span>
+                    {cleanText(questionText)}
+                    {isYoung && <Speaker text={cleanText(questionText)} />}
+                  </p>
+                  {!isYoung && (
+                    <input
+                      className="w-full border-2 border-[#C4B5FD] rounded-xl px-4 py-3 shadow-inner focus:ring-2 focus:ring-[#A78BFA] transition"
+                      value={answers[i]}
+                      onChange={(e) => {
+                        const copy = [...answers];
+                        copy[i] = e.target.value;
+                        setAnswers(copy);
+                      }}
+                      placeholder="Cevabını buraya yaz..."
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-8 flex flex-col items-center">
+            <span className="text-2xl mb-2">🎉</span>
+            <p className="text-[#4B5563] text-sm text-center mb-4">
+              Harika bir iş çıkardın! Bilim yolculuğunda bir adım daha ilerledin.
+              {isYoung && (
+                <Speaker text="Harika bir iş çıkardın! Bilim yolculuğunda bir adım daha ilerledin." />
+              )}
+            </p>
+            <button
+              onClick={async () => {
+                await completeExperiment(experiment.id, {
+                  notes: answers.join(" | "),
+                  rating: 5,
+                });
+                navigate("/experiments");
+              }}
+              className="w-full max-w-xs bg-gradient-to-r from-[#F59E42] via-[#14B8A6] via-[#F472B6] to-[#3B82F6] animate-gradient text-white font-black py-4 rounded-full text-lg shadow-lg hover:scale-105 transition"
+            >
+              Deneyi Tamamla ✓
+              {isYoung && <Speaker text="Deneyi Tamamla" />}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -154,7 +204,9 @@ export default function ExperimentDetail() {
           </button>
 
           <div className="mt-8">
-            <h1 className="text-3xl font-extrabold mb-3">{experiment.title}</h1>
+            <h1 className="text-3xl font-extrabold mb-3">
+              {experiment.title}
+            </h1>
             <p className="text-[#475569] mb-6">
               Adım {step + 1} / {experiment.steps.length}
             </p>
@@ -212,7 +264,9 @@ export default function ExperimentDetail() {
             title={`Adım ${step + 1}`}
             className="pt-2 "
             icon="🧪"
-            onSpeak={isYoung ? () => speak(current.instruction) : undefined}
+            onSpeak={
+              isYoung ? () => speak(current.instruction || "") : undefined
+            }
           >
             <p className="mb-4 text-[#334155]">
               {cleanText(current.instruction)}

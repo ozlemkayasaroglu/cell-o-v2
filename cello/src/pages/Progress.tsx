@@ -138,6 +138,30 @@ export default function Progress({ childAge = 6 }) {
     }
   }, [progress.badges]);
 
+  // Sesli okuma fonksiyonu
+  const speak = (text: string) => {
+    if (window.speechSynthesis) {
+      const utter = new window.SpeechSynthesisUtterance(text);
+      utter.lang = "tr-TR";
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+  };
+  const isYoung = childAge <= 7;
+
+  // Hoparlör ikonlu buton (tekrar kullanılabilir)
+  const Speaker = ({ text }: { text: string }) => (
+    <button
+      type="button"
+      aria-label="Sesli oku"
+      className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none"
+      onClick={e => { e.stopPropagation(); speak(text); }}
+      tabIndex={0}
+    >
+      <span role="img" aria-label="Sesli oku">🔊</span>
+    </button>
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center">
@@ -342,8 +366,20 @@ export default function Progress({ childAge = 6 }) {
                   <div className="mb-6 p-4 bg-green-100/60 border border-green-200 rounded-2xl flex items-center gap-4">
                     <div className="text-4xl">{categoryIcons[lastCompleted.category as keyof typeof categoryIcons] || "🔬"}</div>
                     <div>
-                      <p className="font-bold text-[#166534] text-base mb-1">Son Tamamlanan Deney: {lastCompleted.title}</p>
-                      <p className="text-xs text-green-900 mb-1">{lastCompleted.description?.substring(0, 100)}...</p>
+                      <p className="font-bold text-[#166534] text-base mb-1">
+                        Son Tamamlanan Deney: {lastCompleted.title}
+                        {isYoung && (
+                          <span className="inline-block align-middle">
+                            <Speaker text={`Son Tamamlanan Deney: ${lastCompleted.title}`} />
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-green-900 mb-1">
+                        {lastCompleted.description?.substring(0, 100)}...
+                        {isYoung && lastCompleted.description && (
+                          <Speaker text={lastCompleted.description.substring(0, 100)} />
+                        )}
+                      </p>
                       {lastCompleted.expectedResults && (
                         <ul className="list-disc list-inside text-xs text-green-800">
                           {lastCompleted.expectedResults.slice(0, 2).map((result, i) => (
@@ -368,21 +404,29 @@ export default function Progress({ childAge = 6 }) {
                       <div className="flex-1">
                         <p className="font-semibold text-[#1F2937] mb-1">
                           {idx + 1}. {exp.title}
+                          {isYoung && (
+                            <Speaker text={exp.title || ""} />
+                          )}
                         </p>
                         <p className="text-xs text-[#6B7280] mb-2">
                           {exp.description?.substring(0, 80)}...
+                          {isYoung && exp.description && (
+                            <Speaker text={exp.description.substring(0, 80)} />
+                          )}
                         </p>
                         {exp.status === "completed" && exp.expectedResults && (
                           <div className="bg-green-50 border border-green-200 rounded-lg p-2 mb-2">
-                            <p className="text-xs text-green-700 font-semibold mb-1">
+                            <p className="text-xs text-green-700 font-semibold mb-1 flex items-center">
                               Deney Sonucu:
+                              {isYoung && <Speaker text="Deney Sonucu" />}
                             </p>
                             <ul className="list-disc list-inside text-xs text-green-800">
-                              {exp.expectedResults
-                                .slice(0, 2)
-                                .map((result, i) => (
-                                  <li key={i}>{result}</li>
-                                ))}
+                              {exp.expectedResults.slice(0, 2).map((result, i) => (
+                                <li key={i} className="flex items-center">
+                                  {result}
+                                  {isYoung && <Speaker text={result || ""} />}
+                                </li>
+                              ))}
                             </ul>
                           </div>
                         )}
