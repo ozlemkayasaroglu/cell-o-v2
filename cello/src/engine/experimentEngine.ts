@@ -127,7 +127,6 @@ class ExperimentEngine {
 
   // Tüm deneyleri getir (yaş/difficulty filtresi olmadan, 52 deney)
   async getAllExperiments(): Promise<WeeklyExperiment[]> {
-    const progress = await this.getProgress();
     const completedData = await storage.getItem(STORAGE_KEYS.COMPLETED_EXPERIMENTS);
     const completed: string[] = completedData ? JSON.parse(completedData) : [];
 
