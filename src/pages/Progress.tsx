@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Transition } from "@headlessui/react"; // Animasyon için
 import { categoryIcons } from "../types/experimentTypes";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
+import TabNavigation from "../components/TabNavigation";
 
 export default function Progress() {
+  const navigate = useNavigate();
   const { allExperiments, progress, loading } = useWeeklyExperiment();
 
   const [recentBadge, setRecentBadge] = useState<{
@@ -20,6 +23,16 @@ export default function Progress() {
       setAgeGroup(parsed.ageGroup || null);
     }
   }, []);
+
+  const handleTabChange = (tab: "home" | "experiments" | "progress") => {
+    if (tab === "home") {
+      navigate("/");
+    } else if (tab === "experiments") {
+      navigate("/experiments");
+    } else if (tab === "progress") {
+      // already on progress
+    }
+  };
 
   const level = Math.floor(progress.totalPoints / 100) + 1;
   const currentLevelXP = progress.totalPoints % 100;
@@ -189,7 +202,7 @@ export default function Progress() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10 relative">
+    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10 relative pb-[70px]">
       {/* Rozet Popup */}
       <Transition
         show={!!recentBadge}
@@ -236,25 +249,6 @@ export default function Progress() {
               </div>
               <p className="text-xs text-[#6B7280] mt-2 text-center">
                 Seviye {level + 1} için {100 - currentLevelXP} XP daha 🚀
-              </p>
-            </div>
-
-            {/* Weekly Streak */}
-            <div className="bg-white/70 rounded-2xl p-4 mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span>Haftalık Seri</span>
-                <span className="text-[#0D9488] font-bold">
-                  {progress.streak} 🔥
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
-                <div
-                  className="bg-[#14B8A6] h-3 rounded-full transition-all"
-                  style={{ width: `${Math.min(progress.streak * 14, 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-[#6B7280] mt-2 text-center">
-                Bu hafta kesintisiz devam et!
               </p>
             </div>
 
@@ -504,6 +498,7 @@ export default function Progress() {
           </div>
         </div>
       </div>
+      <TabNavigation activeTab="progress" onTabChange={handleTabChange} />
     </div>
   );
 }

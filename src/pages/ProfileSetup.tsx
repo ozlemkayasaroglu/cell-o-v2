@@ -53,7 +53,7 @@ export default function ProfileSetup() {
 
     localStorage.setItem("user_profile", JSON.stringify(profile));
     localStorage.setItem("profile_completed", "true");
-    navigate("/");
+    navigate("/home");
   };
 
   const avatarEmoji = avatars.find((a) => a.id === selectedAvatar)?.emoji;
@@ -102,7 +102,7 @@ export default function ProfileSetup() {
 
           <h2 className="text-2xl font-extrabold text-[#0F172A] mb-1">
             {renderColorfulNickname(
-              nickname.trim() || getDefaultNickname(selectedAge)
+              nickname.trim() || getDefaultNickname(selectedAge),
             )}
           </h2>
 

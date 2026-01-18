@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 import type { WeeklyExperiment } from "../types/experimentTypes";
+import TabNavigation from "../components/TabNavigation";
 
 /* ---------- Helpers ---------- */
 
@@ -87,6 +88,16 @@ export default function ExperimentDetail() {
     setAnswers(new Array(exp.observationGuide.length).fill(""));
   }, [experimentId, allExperiments]);
 
+  const handleTabChange = (tab: "home" | "experiments" | "progress") => {
+    if (tab === "home") {
+      navigate("/");
+    } else if (tab === "experiments") {
+      navigate("/experiments");
+    } else if (tab === "progress") {
+      navigate("/progress");
+    }
+  };
+
   if (!experiment) return null;
 
   const isYoung = ageGroup === "4-5" || ageGroup === "6-7";
@@ -114,7 +125,7 @@ export default function ExperimentDetail() {
 
   if (showSurvey) {
     return (
-      <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4 pb-[70px]">
         <div className="w-full max-w-2xl bg-white rounded-3xl p-8 shadow-xl">
           <div className="flex flex-col items-center mb-6">
             <span className="text-4xl md:text-5xl mb-2 animate-float">📋</span>
@@ -192,7 +203,7 @@ export default function ExperimentDetail() {
   /* ---------- Main Flow ---------- */
 
   return (
-    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10">
+    <div className="min-h-screen bg-[#F8FEFB] px-4 py-10 pb-[70px]">
       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* LEFT – Progress / Illustration */}
         <div className="bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] p-8 flex flex-col justify-between">
@@ -320,6 +331,7 @@ export default function ExperimentDetail() {
           </div>
         </div>
       </div>
+      <TabNavigation activeTab="experiments" onTabChange={handleTabChange} />
     </div>
   );
 }

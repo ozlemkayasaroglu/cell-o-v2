@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
 import { useState, useEffect } from "react";
+import TabNavigation from "../components/TabNavigation";
 
 // Speaker bileşeni fonksiyon dışında tanımlı, hook kullanılmıyor, tamamen saf fonksiyon
 function Speaker({ text }: { text: string }) {
@@ -42,6 +43,16 @@ export default function Experiments() {
   }, []);
   const isYoung = ageGroup === "4-5" || ageGroup === "6-7";
 
+  const handleTabChange = (tab: "home" | "experiments" | "progress") => {
+    if (tab === "home") {
+      navigate("/");
+    } else if (tab === "experiments") {
+      // already on experiments
+    } else if (tab === "progress") {
+      navigate("/progress");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center">
@@ -59,7 +70,7 @@ export default function Experiments() {
       : (progress.totalExperimentsCompleted / allExperiments.length) * 100;
 
   return (
-    <main className="min-h-screen bg-[#F8FEFB] px-4 py-10">
+    <main className="min-h-screen bg-[#F8FEFB] px-4 py-10 pb-[70px]">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT – Onboarding Hero */}
         <section className="lg:col-span-1 bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] rounded-[32px] p-8 flex flex-col justify-between shadow-sm">
@@ -222,6 +233,7 @@ to-[#3B82F6] h-3 rounded-full transition-all"
           )}
         </section>
       </div>
+      <TabNavigation activeTab="experiments" onTabChange={handleTabChange} />
     </main>
   );
 }

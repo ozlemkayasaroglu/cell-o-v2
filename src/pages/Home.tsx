@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWeeklyExperiment } from "../hooks/useWeeklyExperiment";
+import TabNavigation from "../components/TabNavigation";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -305,8 +306,18 @@ export default function Home() {
 
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
+  const handleTabChange = (tab: "home" | "experiments" | "progress") => {
+    if (tab === "home") {
+      // already on home
+    } else if (tab === "experiments") {
+      navigate("/experiments");
+    } else if (tab === "progress") {
+      navigate("/progress");
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-[#F8FEFB] flex flex-col">
+    <main className="min-h-screen bg-[#F8FEFB] pb-[70px]">
       <section className="flex-1 flex flex-col items-center justify-center mt-10">
         <div className="max-w-5xl mx-auto flex flex-col gap-8">
           {/* HERO */}
@@ -578,6 +589,7 @@ export default function Home() {
       <footer className="w-full py-4 bg-[#E0F7F1] text-center text-xs text-[#64748B]">
         © {new Date().getFullYear()} Cell-o. Tüm hakları saklıdır.
       </footer>
+      <TabNavigation activeTab="home" onTabChange={handleTabChange} />
     </main>
   );
 }
