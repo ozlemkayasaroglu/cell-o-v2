@@ -1,87 +1,131 @@
-# Cello - Çocuklar İçin Bilim Deneyleri
+# Cell-o: Çocuklar için Bilimsel Deneyler Uygulaması
 
-Çocukların bilim dünyasını keşfetmesi için tasarlanmış interaktif deney platformu.
+> **Bu uygulamayı kızım D. başta olmak üzere tüm meraklı çocuklara ithaf ediyorum.**
 
-## 🚀 Özellikler
+Bu proje, çocuklar için Türkçe, eğlenceli ve erişilebilir bilimsel deneyler sunan bir React + TypeScript uygulamasıdır. Kullanıcılar giriş/üye olma olmadan, ilerlemelerini ve profil bilgilerini tarayıcıda (localStorage) saklar.
 
-- 📚 **12 Haftalık Deney Programı** - Yaş grubuna göre özelleştirilmiş deneyler
-- 🎯 **Yaş Grupları** - 4-5, 6-7, 8-9, 10-12 yaş için uyarlanmış içerik
-- 📊 **İlerleme Takibi** - XP, rozetler ve başarı sistemi
-- 🔬 **Adım Adım Rehberlik** - Her deney için detaylı talimatlar
-- 📝 **Gözlem Anketi** - Çoktan seçmeli sorularla öğrenme pekiştirme
-- ✅ **Otomatik Değerlendirme** - Cevapların doğruluğunu kontrol etme
-- 📱 **Responsive Tasarım** - Mobil, tablet ve desktop uyumlu
+## Özellikler
 
-## 🛠️ Teknolojiler
+- **Türkçe ve çocuk dostu arayüz**
+- **Deney kartları ve haftalık görevler**
+- **Tamamlanan deneyler, XP ve rozet sistemi**
+- **Yaş grubuna göre erişilebilirlik (4-7 yaş için sesli okuma)**
+- **Kullanıcı profili, renkli takma ad ve avatar seçimi**
+- **Tüm ilerleme ve profil bilgileri localStorage'da saklanır**
+- **Giriş/üye olma yok, kullanıcı kaldığı yerden devam eder**
+- **Modern ve hızlı arayüz (Vite, Tailwind CSS)**
+- **SEO ve performans optimizasyonları**
 
-- **React 18** - Modern UI framework
-- **TypeScript** - Type-safe development
-- **Vite** - Hızlı build tool
-- **Tailwind CSS** - Utility-first CSS
-- **React Router** - Client-side routing
-- **Lucide React** - Icon library
+## Kullanım
 
-## 📦 Kurulum
+1. Projeyi klonlayın:
+   ```sh
+   git clone <repo-url>
+   cd cello
+   ```
+2. Bağımlılıkları yükleyin:
+   ```sh
+   npm install
+   ```
+3. Geliştirme sunucusunu başlatın:
+   ```sh
+   npm run dev
+   ```
+4. Uygulamayı açın: [http://localhost:5173](http://localhost:5173)
 
-```bash
-cd cello
-npm install
-npm run dev
+## Veri Saklama
+
+- Kullanıcı profili, tamamlanan deneyler ve tüm ilerleme **localStorage**'da saklanır.
+- Kullanıcı tekrar siteye girdiğinde, kaldığı yerden devam eder.
+- Farklı tarayıcı veya cihazda ya da localStorage temizlenirse veriler sıfırlanır.
+
+## Erişilebilirlik ve Yaş Grupları
+
+- 4-5 ve 6-7 yaş grubu için deney kartlarında ve açıklamalarda sesli okuma (hoparlör ikonu) bulunur.
+- 8+ yaş için bu özellik gizlenir.
+
+## Geliştirici Notları
+
+- Proje Vite, React, TypeScript ve Tailwind CSS ile geliştirilmiştir.
+- Kodda tüm hook'lar React kurallarına uygun şekilde sıralanmıştır.
+- SEO ve performans için semantic HTML, lazy loading ve meta etiketler uygulanmıştır.
+
+## Katkı ve Lisans
+
+Katkıda bulunmak için PR gönderebilirsiniz. Lisans bilgisi için LICENSE dosyasına bakınız.
+
+Aşağıda orijinal Vite/React template notları yer almaktadır:
+
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```
 
-Uygulama `http://localhost:5173` adresinde çalışacak.
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## 🎮 Kullanım
+```js
+// eslint.config.js
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
-1. **Onboarding** - Uygulamayı tanı
-2. **Profil Oluştur** - Yaş grubu ve avatar seç
-3. **Deneyler** - Yaşına uygun deneyleri keşfet
-4. **Deney Yap** - Adım adım talimatları takip et
-5. **Gözlem Anketi** - Sorulara cevap ver
-6. **Sonuçlar** - Doğru/yanlış kontrolü gör
-7. **İlerleme** - Rozetlerini ve XP'ni takip et
-
-## 📁 Proje Yapısı
-
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs["recommended-typescript"],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```
-cello/
-├── src/
-│   ├── components/      # Reusable components
-│   ├── pages/          # Page components
-│   ├── hooks/          # Custom React hooks
-│   ├── services/       # API services
-│   ├── engine/         # Business logic
-│   ├── data/           # Experiment data
-│   ├── types/          # TypeScript types
-│   └── App.tsx         # Main app component
-├── public/             # Static assets
-└── package.json        # Dependencies
-```
-
-## 🎯 Yaş Grubu Filtreleme
-
-- **4-5 yaş** → Sadece "kolay" deneyler
-- **6-7 yaş** → Sadece "kolay" deneyler
-- **8-9 yaş** → Sadece "orta" deneyler
-- **10-12 yaş** → Sadece "zor" deneyler
-
-## 🏆 Başarı Sistemi
-
-- **İlk Deney** - İlk deneyini tamamla
-- **Meraklı** - 3 deney tamamla
-- **Bilim İnsanı** - 5 deney tamamla
-- **Araştırmacı** - 8 deney tamamla
-- **Uzman** - 10 deney tamamla
-- **Profesör** - 12 deney tamamla
-
-## 📝 Lisans
-
-MIT License
-
-## 👥 Katkıda Bulunma
-
-Pull request'ler memnuniyetle karşılanır!
-
-## 📧 İletişim
-
-Sorularınız için issue açabilirsiniz.
