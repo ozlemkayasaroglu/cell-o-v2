@@ -10,8 +10,8 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen justify-between">
-      <div className="min-h-screen bg-[#F8FEFB] flex items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col bg-[#F8FEFB]">
+      <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
           {/* LEFT – Illustration */}
           <div className="relative flex items-center justify-center bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] p-8 md:p-12">

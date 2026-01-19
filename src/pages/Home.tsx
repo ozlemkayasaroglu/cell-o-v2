@@ -586,9 +586,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="w-full py-4 bg-[#E0F7F1] text-center text-xs text-[#64748B]">
-        © {new Date().getFullYear()} Cell-o. Tüm hakları saklıdır.
-      </footer>
       <TabNavigation activeTab="home" onTabChange={handleTabChange} />
     </main>
   );
