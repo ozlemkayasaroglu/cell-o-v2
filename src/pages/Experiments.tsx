@@ -34,7 +34,8 @@ export default function Experiments() {
   const { allExperiments, progress, loading } = useWeeklyExperiment();
   const [ageGroup, setAgeGroup] = useState<string | null>(null);
   useEffect(() => {
-    document.title = "Cell-o | Bilimsel Deneyler";
+    document.title =
+      "Tully - Çocuklar için Bilim Deneyleri | Bilimsel Deneyler";
     const profile = localStorage.getItem("user_profile");
     if (profile) {
       const parsed = JSON.parse(profile);
@@ -139,15 +140,15 @@ to-[#3B82F6] h-3 rounded-full transition-all"
                         exp.difficulty === "kolay"
                           ? "bg-[#D1FAE5] text-[#059669]"
                           : exp.difficulty === "orta"
-                          ? "bg-[#FEF3C7] text-[#D97706]"
-                          : "bg-[#FEE2E2] text-[#DC2626]"
+                            ? "bg-[#FEF3C7] text-[#D97706]"
+                            : "bg-[#FEE2E2] text-[#DC2626]"
                       }`}
                     >
                       {exp.difficulty === "kolay"
                         ? "Kolay"
                         : exp.difficulty === "orta"
-                        ? "Orta"
-                        : "Zor"}
+                          ? "Orta"
+                          : "Zor"}
                     </span>
                   </div>
 
@@ -201,8 +202,8 @@ to-[#3B82F6] h-3 rounded-full transition-all"
                       isLocked
                         ? "bg-rose-300 text-rose-100 cursor-not-allowed"
                         : isCompleted
-                        ? "bg-gradient-to-br from-[#6EE7B7] to-[#38BDF8] text-white"
-                        : "bg-[length:300%_300%] bg-gradient-to-r from-[#F59E42] via-[#14B8A6] via-[#F472B6] to-[#3B82F6] animate-gradient text-white "
+                          ? "bg-gradient-to-br from-[#6EE7B7] to-[#38BDF8] text-white"
+                          : "bg-[length:300%_300%] bg-gradient-to-r from-[#F59E42] via-[#14B8A6] via-[#F472B6] to-[#3B82F6] animate-gradient text-white "
                     }`}
                   >
                     {isLocked ? (

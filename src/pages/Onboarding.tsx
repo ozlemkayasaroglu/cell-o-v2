@@ -17,7 +17,7 @@ export default function Onboarding() {
           <div className="relative flex items-center justify-center bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] p-8 md:p-12">
             <img
               src="/onboarding.png"
-              alt="Cell-o onboarding"
+              alt="Tully onboarding"
               className="w-full max-w-sm md:max-w-md object-contain rounded-2xl "
             />
           </div>
@@ -65,7 +65,7 @@ export default function Onboarding() {
                   fontWeight: "bold",
                 }}
               >
-                c
+                T
               </span>
               <span
                 style={{
@@ -74,7 +74,7 @@ export default function Onboarding() {
                   fontWeight: "bold",
                 }}
               >
-                e
+                u
               </span>
               <span
                 style={{
@@ -101,16 +101,7 @@ export default function Onboarding() {
                   fontWeight: "bold",
                 }}
               >
-                -
-              </span>
-              <span
-                style={{
-                  color: "#F472B6",
-                  fontFamily: "Fredoka",
-                  fontWeight: "bold",
-                }}
-              >
-                o{" "}
+                y{" "}
               </span>
               ile çocuklar her hafta evde, güvenli ve eğlenceli deneyler yaparak
               bilimi keşfeder.

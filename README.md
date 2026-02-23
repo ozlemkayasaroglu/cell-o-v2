@@ -1,4 +1,4 @@
-# Cell-o: Çocuklar için Bilimsel Deneyler Uygulaması
+# Tully - Çocuklar için Bilim Deneyleri: Bilimsel Deneyler Uygulaması
 
 > **Bu uygulamayı kızım D. başta olmak üzere tüm meraklı çocuklara ithaf ediyorum.**
 

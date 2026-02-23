@@ -5,7 +5,8 @@ import TabNavigation from "../components/TabNavigation";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { currentExperiment, progress, loading, allExperiments } = useWeeklyExperiment();
+  const { currentExperiment, progress, loading, allExperiments } =
+    useWeeklyExperiment();
 
   const [profile, setProfile] = useState<{
     avatar: string;
@@ -427,17 +428,19 @@ export default function Home() {
                     Rastgele Deney
                   </span>
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#D1FAE5] text-[#059669]">
-                    {allExperiments[randomExperimentIndex]?.difficulty || "Kolay"}
+                    {allExperiments[randomExperimentIndex]?.difficulty ||
+                      "Kolay"}
                   </span>
                 </div>
 
                 <h3 className="text-xl font-extrabold text-[#0F172A] mb-2">
-                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly?.title ||
-                    allExperiments[randomExperimentIndex]?.title}
+                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly
+                    ?.title || allExperiments[randomExperimentIndex]?.title}
                   {isYoung && (
                     <Speaker
                       text={
-                        (allExperiments[randomExperimentIndex] as any)?.childFriendly?.title ||
+                        (allExperiments[randomExperimentIndex] as any)
+                          ?.childFriendly?.title ||
                         allExperiments[randomExperimentIndex]?.title ||
                         ""
                       }
@@ -445,12 +448,14 @@ export default function Home() {
                   )}
                 </h3>
                 <p className="text-sm text-[#475569] mb-4">
-                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly?.description ||
+                  {(allExperiments[randomExperimentIndex] as any)?.childFriendly
+                    ?.description ||
                     allExperiments[randomExperimentIndex]?.description}
                   {isYoung && (
                     <Speaker
                       text={
-                        (allExperiments[randomExperimentIndex] as any)?.childFriendly?.description ||
+                        (allExperiments[randomExperimentIndex] as any)
+                          ?.childFriendly?.description ||
                         allExperiments[randomExperimentIndex]?.description ||
                         ""
                       }
@@ -461,15 +466,25 @@ export default function Home() {
                 <div className="flex justify-between items-center mb-5">
                   <div className="flex gap-4 text-sm text-[#64748B]">
                     <span>
-                      ⏱️ {allExperiments[randomExperimentIndex]?.estimatedTime || "15 dk"}{" "}
+                      ⏱️{" "}
+                      {allExperiments[randomExperimentIndex]?.estimatedTime ||
+                        "15 dk"}{" "}
                       {isYoung && (
-                        <Speaker text={allExperiments[randomExperimentIndex]?.estimatedTime || "15 dk"} />
+                        <Speaker
+                          text={
+                            allExperiments[randomExperimentIndex]
+                              ?.estimatedTime || "15 dk"
+                          }
+                        />
                       )}
                     </span>
                     <span>
-                      ⭐ +{allExperiments[randomExperimentIndex]?.points || 10} XP{" "}
+                      ⭐ +{allExperiments[randomExperimentIndex]?.points || 10}{" "}
+                      XP{" "}
                       {isYoung && (
-                        <Speaker text={`Artı ${allExperiments[randomExperimentIndex]?.points || 10} XP`} />
+                        <Speaker
+                          text={`Artı ${allExperiments[randomExperimentIndex]?.points || 10} XP`}
+                        />
                       )}
                     </span>
                   </div>
@@ -477,7 +492,9 @@ export default function Home() {
 
                 <button
                   onClick={() =>
-                    navigate(`/experiment/${allExperiments[randomExperimentIndex]?.id}`)
+                    navigate(
+                      `/experiment/${allExperiments[randomExperimentIndex]?.id}`,
+                    )
                   }
                   className="w-full py-4 rounded-full bg-[length:300%_300%]
     bg-gradient-to-r

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import packageJson from "../../package.json";
 
 const AppFooter = () => {
@@ -14,6 +15,12 @@ const AppFooter = () => {
           Özlem K.
         </a>
         <p className="text-gray-300">{`v${packageJson.version}`}</p>
+        <Link
+          to="/privacy-policy"
+          className="text-[#14B8A6] hover:underline mt-2 inline-block"
+        >
+          Gizlilik Politikası
+        </Link>
       </div>
     </footer>
   );
