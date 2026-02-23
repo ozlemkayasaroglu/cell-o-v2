@@ -96,7 +96,7 @@ export default function ProfileSetup() {
       <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* LEFT – Preview / Illustration */}
         <div className="bg-gradient-to-br from-[#E0F7F1] to-[#B8F0E8] flex flex-col items-center justify-center p-10 text-center">
-          <img src="/logo.png" alt="Cell-o" className="w-28 mb-6" />
+          <img src="/logo.png" alt="Tully" className="w-28 mb-6" />
 
           <div className="text-[72px] mb-3">{avatarEmoji}</div>
 

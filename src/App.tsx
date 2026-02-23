@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Experiments from "./pages/Experiments";
 import Progress from "./pages/Progress";
 import ExperimentDetail from "./pages/ExperimentDetail";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function App() {
   const isProfileCompleted =
@@ -31,6 +32,7 @@ function App() {
           path="/experiment/:experimentId"
           element={<ExperimentDetail />}
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route
           path="*"
           element={
