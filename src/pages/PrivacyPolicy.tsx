@@ -15,9 +15,27 @@ export default function PrivacyPolicy() {
             ← Geri Dön
           </button>
 
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-8 font-baloo">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] mb-4 font-baloo">
             Gizlilik Politikası
           </h1>
+
+          <div className="mb-8 p-4 bg-[#F0FDFA] rounded-lg border border-[#14B8A6]/20">
+            <p className="text-sm text-[#64748B]">
+              <strong className="text-[#0F172A]">Uygulama:</strong> Tully –
+              Çocuklar için Bilim Deneyleri
+              <br />
+              <strong className="text-[#0F172A]">Geliştirici:</strong> Özlem
+              Kaya Saroglu
+              <br />
+              <strong className="text-[#0F172A]">İletişim:</strong>{" "}
+              <a
+                href="mailto:info@ozlemkayasaroglu.com"
+                className="underline text-[#14B8A6] hover:text-[#0F766E]"
+              >
+                info@ozlemkayasaroglu.com
+              </a>
+            </p>
+          </div>
 
           <div className="space-y-6 text-[#475569]">
             <section>
@@ -53,8 +71,15 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>Google AdMob aracılığıyla gösterilir</li>
-                <li>Çocukların gizlilik haklarına uygun olarak seçilmiştir</li>
+                <li>
+                  Google AdMob kullanır ve çocuklara yönelik veri toplamaz
+                </li>
+                <li>
+                  Çocukların gizlilik haklarına uygun olarak seçilmiştir (COPPA
+                  uyumlu)
+                </li>
                 <li>İnternet bağlantısı gerektirir</li>
+                <li>Kişiselleştirilmiş reklam gösterilmez</li>
               </ul>
             </section>
 
@@ -116,8 +141,20 @@ export default function PrivacyPolicy() {
                 <strong>Son Güncelleme: 2026</strong>
               </p>
               <p className="text-sm text-[#64748B] mt-2">
-                Bu uygulama çocukların gizliliği için Google Play Store
-                kurallarına uygun olarak tasarlanmıştır.
+                Bu uygulama çocukların gizliliği için Google Play Store ve App
+                Store kurallarına uygun olarak tasarlanmıştır.
+              </p>
+              <p className="text-sm text-[#64748B] mt-4">
+                Bu gizlilik politikası şu adreste yayınlanmaktadır:
+                <br />
+                <a
+                  href="https://cell-o.pages.dev/privacy-policy"
+                  className="text-[#14B8A6] hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  https://cell-o.pages.dev/privacy-policy
+                </a>
               </p>
             </div>
           </div>
