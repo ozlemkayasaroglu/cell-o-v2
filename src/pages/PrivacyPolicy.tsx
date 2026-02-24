@@ -25,14 +25,14 @@ export default function PrivacyPolicy() {
               Çocuklar için Bilim Deneyleri
               <br />
               <strong className="text-[#0F172A]">Geliştirici:</strong> Özlem
-              Kaya Saroglu
+              Kayasaroğlu
               <br />
               <strong className="text-[#0F172A]">İletişim:</strong>{" "}
               <a
-                href="mailto:info@ozlemkayasaroglu.com"
+                href="mailto:ozlemkayasaroglu@gmail.com"
                 className="underline text-[#14B8A6] hover:text-[#0F766E]"
               >
-                info@ozlemkayasaroglu.com
+                ozlemkayasaroglu@gmail.com
               </a>
             </p>
           </div>
